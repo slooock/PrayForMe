@@ -10,6 +10,7 @@ class CadastroPage extends StatefulWidget {
 class _CadastroPageState extends State<CadastroPage> {
   bool isLoggedIn = false;
   var controladorUsuario = ControladorUsuarioSingleton();
+  var controladorTela = ControladorTelasSingleton();
 
   @override
   Widget build(BuildContext context) {
@@ -36,8 +37,9 @@ class _CadastroPageState extends State<CadastroPage> {
             children: <Widget>[
               ButtonTheme(
                 child: IconButton(
-                  onPressed: (){
-                    controladorUsuario.loginFacebook();
+                  onPressed: ()async{
+                    await controladorUsuario.loginFacebook();
+                    controladorTela.showHomePage(context);
                   },
                   icon: Icon(MdiIcons.facebookBox,
                   ),
@@ -51,7 +53,7 @@ class _CadastroPageState extends State<CadastroPage> {
                 child: IconButton(
                   onPressed: ()async{
                     await controladorUsuario.loginGoogle();
-
+                    controladorTela.showHomePage(context);
                   },
                   icon: Icon(MdiIcons.google,
                   ),

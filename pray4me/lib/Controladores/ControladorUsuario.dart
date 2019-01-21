@@ -73,6 +73,7 @@ class ControladorUsuarioSingleton {
       await Firestore.instance.collection("usuarios")
           .document(doc.documentID)
           .updateData({"idFirebase": doc.documentID});
+      usuario.idFirebase = doc.documentID;
     }else{
       usuario.idFirebase = usr.documents[0].data["idFirebase"];
     }
@@ -101,8 +102,7 @@ class ControladorUsuarioSingleton {
       case FacebookLoginStatus.loggedIn:
         print("FacebookLoginStatus.loggedIn");
 
-        //çogando no firebase
-        await FirebaseAuth.instance.signInWithFacebook(accessToken: result.accessToken.token);
+        FirebaseAuth.instance.signInWithFacebook(accessToken: result.accessToken.token);
 
         usuario = new Usuario();
         usuario.senderName = profile['name'];
@@ -128,6 +128,7 @@ class ControladorUsuarioSingleton {
           await Firestore.instance.collection("usuarios")
               .document(doc.documentID)
               .updateData({"idFirebase": doc.documentID});
+          usuario.idFirebase = doc.documentID;
         }else{
           usuario.idFirebase = usr.documents[0].data["idFirebase"];
         }
@@ -142,5 +143,24 @@ class ControladorUsuarioSingleton {
   }
 
 
+
+  //============================================
+  //ENVIAR PEDIDO                              |
+  //============================================
+
+  void enviaPedido(String pedido)async{
+    
+    DocumentReference doc = await Firestore.instance.collection("pedidos").add({
+      "text":pedido,
+      "senderName": usuario.senderName,
+      "senderPhoto": usuario.senderPhotoUrl,
+      "idFirebase" : usuario.idFirebase,
+    });
+
+    usuario.quantPedidos = usuario.quantPedidos +1;
+    await Firestore.instance.collection('usuarios').document(usuario.idFirebase).updateData({"quantPedidos":usuario.quantPedidos});
+    await Firestore.instance.collection("usuarios").document(usuario.idFirebase).collection("pedidos").add({"idPedido":doc.documentID});
+
+  }
 
 }

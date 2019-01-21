@@ -16,6 +16,11 @@ class Usuario{
   int get quantPedidos => _quantPedidos;
   int get quantAgradecimentos => _quantAgradecimentos;
 
+
+  set idSistemaLogin(String idSistemaLogin){
+    _idSistemaLogin = idSistemaLogin;
+  }
+
   set quantPedidos(int quantPedidos){
     _quantPedidos = quantPedidos;
   }
@@ -26,10 +31,6 @@ class Usuario{
 
   set idFirebase(String idFirebase){
     _idFirebase = idFirebase;
-  }
-
-  set idSistemaLogin(String idSistemaLogin){
-    _idSistemaLogin = idSistemaLogin;
   }
 
   set senderName(String senderName){
