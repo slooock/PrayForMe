@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "1020262892734",
+    "firebase_url": "https://pray4me-f2943.firebaseio.com",
+    "project_id": "pray4me-f2943",
+    "storage_bucket": "pray4me-f2943.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1020262892734:android:4cb2bf3bf8f2d8e4",
+        "android_client_info": {
+          "package_name": "com.slooock.pray4me"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1020262892734-rl2pi6ebockc5lu7p8svgdq2dvq78leo.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.slooock.pray4me",
+            "certificate_hash": "fe38c28bc0e52d70a7100d8f000cdb5cce6a1839"
+          }
+        },
+        {
+          "client_id": "1020262892734-s11mff6659r4her0rm85oajboshmbo9o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA8yVLynE763_UdirnDc_niMF0dWMG8Gtk"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1020262892734-s11mff6659r4her0rm85oajboshmbo9o.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
