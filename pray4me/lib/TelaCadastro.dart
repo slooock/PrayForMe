@@ -36,7 +36,9 @@ class _CadastroPageState extends State<CadastroPage> {
             children: <Widget>[
               ButtonTheme(
                 child: IconButton(
-                  onPressed: (){},
+                  onPressed: (){
+                    controladorUsuario.loginFacebook();
+                  },
                   icon: Icon(MdiIcons.facebookBox,
                   ),
                   iconSize: 40,
@@ -47,8 +49,9 @@ class _CadastroPageState extends State<CadastroPage> {
               ),
               ButtonTheme(
                 child: IconButton(
-                  onPressed: (){
-                    controladorUsuario.loginGoogle();
+                  onPressed: ()async{
+                    await controladorUsuario.loginGoogle();
+
                   },
                   icon: Icon(MdiIcons.google,
                   ),
@@ -67,6 +70,19 @@ class _CadastroPageState extends State<CadastroPage> {
                   highlightColor: Colors.transparent,
                   splashColor: Colors.transparent,
                   color: Colors.amberAccent,
+                ),
+              ),
+              ButtonTheme(
+                child: IconButton(
+                  onPressed: ()async{
+                    await controladorUsuario.sairFacebook();
+                  },
+                  icon: Icon(MdiIcons.clockOut,
+                  ),
+                  iconSize: 40,
+                  highlightColor: Colors.transparent,
+                  splashColor: Colors.transparent,
+                  color: Colors.green,
                 ),
               )
             ],
