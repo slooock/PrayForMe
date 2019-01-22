@@ -16,6 +16,14 @@ class _CadastroPageState extends State<CadastroPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        title: Text('#PrayForMe',
+          style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.blue,
+              fontSize: 20
+          ),
+        ),
+        centerTitle: true,
         elevation: 0,
         backgroundColor: Colors.transparent,
         leading: IconButton(
@@ -74,19 +82,6 @@ class _CadastroPageState extends State<CadastroPage> {
                   color: Colors.amberAccent,
                 ),
               ),
-              ButtonTheme(
-                child: IconButton(
-                  onPressed: ()async{
-                    await controladorUsuario.sairFacebook();
-                  },
-                  icon: Icon(MdiIcons.clockOut,
-                  ),
-                  iconSize: 40,
-                  highlightColor: Colors.transparent,
-                  splashColor: Colors.transparent,
-                  color: Colors.green,
-                ),
-              )
             ],
           ),
         ],

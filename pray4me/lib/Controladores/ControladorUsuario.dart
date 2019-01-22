@@ -76,6 +76,8 @@ class ControladorUsuarioSingleton {
       usuario.idFirebase = doc.documentID;
     }else{
       usuario.idFirebase = usr.documents[0].data["idFirebase"];
+      usuario.quantAgradecimentos = usr.documents[0].data["quantAgradecimentos"];
+      usuario.quantPedidos = usr.documents[0].data["quantPedidos"];
     }
   }
 
@@ -131,6 +133,8 @@ class ControladorUsuarioSingleton {
           usuario.idFirebase = doc.documentID;
         }else{
           usuario.idFirebase = usr.documents[0].data["idFirebase"];
+          usuario.quantAgradecimentos = usr.documents[0].data["quantAgradecimentos"];
+          usuario.quantPedidos = usr.documents[0].data["quantPedidos"];
         }
         break;
       case FacebookLoginStatus.cancelledByUser:
@@ -159,8 +163,14 @@ class ControladorUsuarioSingleton {
 
     usuario.quantPedidos = usuario.quantPedidos +1;
     await Firestore.instance.collection('usuarios').document(usuario.idFirebase).updateData({"quantPedidos":usuario.quantPedidos});
-    await Firestore.instance.collection("usuarios").document(usuario.idFirebase).collection("pedidos").add({"idPedido":doc.documentID});
-
   }
+
+  //============================================
+  //ADICIONA ORADOR                            |
+  //============================================
+  Future<Null> adicionaOrador(var idPedido)async{
+    await Firestore.instance.collection("pedido").document(idPedido).collection("pessoasOram").add({"idFirebase":usuario.idFirebase});
+  }
+
 
 }

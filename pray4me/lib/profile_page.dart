@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:pray4me/Controladores/ControladorTelas.dart';
 import 'package:pray4me/Controladores/ControladorUsuario.dart';
@@ -8,6 +9,8 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+
+  var _controller = ScrollController();
 
   var controladorUsuario = ControladorUsuarioSingleton();
   var controladorTela = ControladorTelasSingleton();
@@ -121,7 +124,12 @@ class _ProfilePageState extends State<ProfilePage> {
                           width: double.infinity,
                           child: OutlineButton(
                             color: Colors.white,
-                            onPressed: (){},
+                            onPressed: ()async{
+                              print(controladorUsuario.usuario.idFirebase);
+                              QuerySnapshot docs = await Firestore.instance.collection("pedidos").where("idFirebase",isEqualTo: controladorUsuario.usuario.idFirebase).getDocuments();
+                              print(docs.documents[0].data);
+                              
+                            },
                             child: Text("Editar perfil"),
 //                            highlightColor: Colors.lightBlue,
 //                            disabledBorderColor: Colors.lightBlue,
@@ -164,10 +172,89 @@ class _ProfilePageState extends State<ProfilePage> {
             ],
           ),
           Expanded(
-            child: ListView(
-              children: <Widget>[
+            child: StreamBuilder(
+              stream: Firestore.instance.collection("pedidos").where("idFirebase",isEqualTo: controladorUsuario.usuario.idFirebase).snapshots(),
+                builder: (context, snapshot) {
+                  switch (snapshot.connectionState) {
+                    case ConnectionState.none:
+                    case ConnectionState.waiting:
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    default:
+                      return ListView.builder(
+                        controller: _controller,
+                        itemCount: snapshot.data.documents.length,
+                        itemBuilder: (context, index) {
+                          List r = snapshot.data.documents.reversed.toList();
+                          return CardPedido(r[index].data);
+                        },
+                      );
+                  }
+                }
 
-              ],
+            )
+          )
+        ],
+      ),
+    );
+  }
+}
+
+
+class CardPedido extends StatefulWidget {
+
+  final Map<String, dynamic> data;
+  CardPedido(this.data);
+
+  @override
+  _CardPedidoState createState() => _CardPedidoState(this.data);
+}
+
+class _CardPedidoState extends State<CardPedido> {
+
+  final Map<String, dynamic> data;
+  _CardPedidoState(this.data);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.only(left: 20,right: 20,top: 10,bottom: 10),
+      decoration: BoxDecoration(
+          border: BorderDirectional(
+              bottom: BorderSide(
+                  color: Colors.black12
+              )
+          )
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          CircleAvatar(
+            backgroundImage: NetworkImage(
+              data["senderPhoto"]
+            ),
+            maxRadius: 30,
+          ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.only(left: 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 5),
+                    child: Text(data["senderName"],
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold
+                      ),
+                    ),
+                  ),
+                  Text(data["text"])
+                ],
+              ),
             ),
           )
         ],

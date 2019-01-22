@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:pray4me/Controladores/ControladorTelas.dart';
 import 'package:pray4me/Controladores/ControladorUsuario.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -21,16 +22,6 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          actions: <Widget>[
-            IconButton(
-                icon: Icon(Icons.arrow_back_ios,
-                  color: Colors.black,
-                ),
-                onPressed: ()async{
-
-                }
-            ),
-          ],
           elevation: 1,
           automaticallyImplyLeading: false,
           title: Text('Página inicial',
@@ -131,11 +122,11 @@ class _HomePageState extends State<HomePage> {
                   children: <Widget>[
                     FlatButton(
                       onPressed: (){
-
+                        controladorTela.showProfilePage(context);
                       },
                       child: Row(
                         children: <Widget>[
-                          Icon(Icons.people),
+                          Icon(Icons.account_circle),
                           Padding(
                             padding: EdgeInsets.only(left: 10),
                             child: Text("Perfil",
@@ -151,7 +142,7 @@ class _HomePageState extends State<HomePage> {
                       onPressed: (){},
                       child: Row(
                         children: <Widget>[
-                          Icon(Icons.people),
+                          Icon(Icons.chrome_reader_mode),
                           Padding(
                             padding: EdgeInsets.only(left: 10),
                             child: Text("Pedidos",
@@ -214,7 +205,8 @@ class _HomePageState extends State<HomePage> {
                           },
                         );
                     }
-                  }),
+                  }
+                  ),
             )
           ],
         ));
@@ -235,7 +227,7 @@ class _CardHomePageState extends State<CardHomePage> {
   final Map<String, dynamic> data;
   _CardHomePageState(this.data);
 
-  Color _collorButton = Colors.blueGrey;
+  Color _collorButton = Colors.grey;
   String _textButton = "Orar?";
   bool _isButtonDisabled = false;
 
@@ -301,35 +293,22 @@ class _CardHomePageState extends State<CardHomePage> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: <Widget>[
-                      RaisedButton(
-                        child: Text(_textButton,
-                          style: TextStyle(
-                              fontSize: 20.0,
-                          ),
+                      IconButton(
+                        icon: Icon(FontAwesomeIcons.prayingHands,
+                          color: _collorButton,
+                          size: 20,
                         ),
-                        color: Colors.white,
-                        splashColor: Colors.white,
-                        highlightColor: Colors.white,
-                        elevation: 0.0,
-                        textColor: _collorButton,
-
-
-                        onPressed: _isButtonDisabled ? null : ()async{
-                          _isButtonDisabled = true;
-
+                        onPressed: (){
 
                           setState(() {
-                            if(_collorButton == Colors.green){
-                              _collorButton = Colors.blueGrey;
-                              _textButton = "Orar?";
-                            }
-                            else{
-                              _collorButton = Colors.green;
-                              _textButton = "Orando!";
+                            if(_collorButton == Colors.grey){
+                              _collorButton = Colors.blue;
+                            }else{
+                              _collorButton = Colors.grey;
                             }
                           });
-                          _isButtonDisabled = false;
                         },
+                        splashColor: Colors.transparent,
                       )
                     ],
                   ),
