@@ -158,18 +158,49 @@ class ControladorUsuarioSingleton {
       "text":pedido,
       "senderName": usuario.senderName,
       "senderPhoto": usuario.senderPhotoUrl,
-      "idFirebase" : usuario.idFirebase,
+      "idUsrFirebase" : usuario.idFirebase,
     });
 
     usuario.quantPedidos = usuario.quantPedidos +1;
     await Firestore.instance.collection('usuarios').document(usuario.idFirebase).updateData({"quantPedidos":usuario.quantPedidos});
+    await Firestore.instance.collection('pedidos').document(doc.documentID).updateData({"idPedFirebase":doc.documentID});
   }
 
   //============================================
   //ADICIONA ORADOR                            |
   //============================================
   Future<Null> adicionaOrador(var idPedido)async{
-    await Firestore.instance.collection("pedido").document(idPedido).collection("pessoasOram").add({"idFirebase":usuario.idFirebase});
+    //adiciona orador no pedido
+    await Firestore.instance.collection("pedidos").document(idPedido).collection("pessoasOram").add({"idFirebase":usuario.idFirebase});
+
+    //adiciona no usuario pedidio que esta orando
+    await Firestore.instance.collection("usuarios").document(usuario.idFirebase).collection("pedidosOram").add({"idFirebase":idPedido});
+
+  }
+
+  Future<Null> removeOrador(var idPedido)async{
+    QuerySnapshot docs = await Firestore.instance.collection("pedidos").document(idPedido).collection("pessoasOram").where("idFirebase",isEqualTo: usuario.idFirebase).getDocuments();
+
+    //remove orador dos pedidos
+    for(var doc in docs.documents){
+      await Firestore.instance.collection("pedidos").document(idPedido).collection("pessoasOram").document(doc.documentID).delete();
+    }
+    
+    //remove pedido orado do usuario
+    QuerySnapshot pedidos = await Firestore.instance.collection("usuarios").document(usuario.idFirebase).collection("pedidosOram").where("idFirebase",isEqualTo: idPedido).getDocuments();
+
+    for(var ped in pedidos.documents){
+      await Firestore.instance.collection("usuarios").document(usuario.idFirebase).collection("pedidosOram").document(ped.documentID).delete();
+    }
+    
+  }
+  
+  Future<bool> verificaExistenciaPedido(String idPedido)async{
+    QuerySnapshot pedidos = await Firestore.instance.collection("usuarios").document(usuario.idFirebase).collection("pedidosOram").where("idFirebase",isEqualTo: idPedido).getDocuments();
+    if(pedidos.documents.length != 0){
+      return true;
+    }
+    return false;
   }
 
 

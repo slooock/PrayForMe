@@ -124,12 +124,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           width: double.infinity,
                           child: OutlineButton(
                             color: Colors.white,
-                            onPressed: ()async{
-                              print(controladorUsuario.usuario.idFirebase);
-                              QuerySnapshot docs = await Firestore.instance.collection("pedidos").where("idFirebase",isEqualTo: controladorUsuario.usuario.idFirebase).getDocuments();
-                              print(docs.documents[0].data);
-                              
-                            },
+                            onPressed: ()async{},
                             child: Text("Editar perfil"),
 //                            highlightColor: Colors.lightBlue,
 //                            disabledBorderColor: Colors.lightBlue,
@@ -173,7 +168,7 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
           Expanded(
             child: StreamBuilder(
-              stream: Firestore.instance.collection("pedidos").where("idFirebase",isEqualTo: controladorUsuario.usuario.idFirebase).snapshots(),
+              stream: Firestore.instance.collection("pedidos").where("idUsrFirebase",isEqualTo: controladorUsuario.usuario.idFirebase).snapshots(),
                 builder: (context, snapshot) {
                   switch (snapshot.connectionState) {
                     case ConnectionState.none:

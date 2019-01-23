@@ -46,6 +46,7 @@ class _CadastroPageState extends State<CadastroPage> {
               ButtonTheme(
                 child: IconButton(
                   onPressed: ()async{
+
                     await controladorUsuario.loginFacebook();
                     controladorTela.showHomePage(context);
                   },

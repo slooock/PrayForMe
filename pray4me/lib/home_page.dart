@@ -228,8 +228,6 @@ class _CardHomePageState extends State<CardHomePage> {
   _CardHomePageState(this.data);
 
   Color _collorButton = Colors.grey;
-  String _textButton = "Orar?";
-  bool _isButtonDisabled = false;
 
   var controladorUsuario = ControladorUsuarioSingleton();
   var controladorTela = ControladorTelasSingleton();
@@ -293,23 +291,29 @@ class _CardHomePageState extends State<CardHomePage> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: <Widget>[
-                      IconButton(
-                        icon: Icon(FontAwesomeIcons.prayingHands,
-                          color: _collorButton,
-                          size: 20,
-                        ),
-                        onPressed: (){
-
-                          setState(() {
+                      Container(
+                        child: IconButton(
+                          icon: Icon(FontAwesomeIcons.prayingHands,
+                            color: _collorButton,
+                            size: 20,
+                          ),
+                          onPressed: ()async{
+                            setState(() {
+                              if(_collorButton == Colors.grey){
+                                _collorButton = Colors.blue;
+                              }else{
+                                _collorButton = Colors.grey;
+                              }
+                            });
                             if(_collorButton == Colors.grey){
-                              _collorButton = Colors.blue;
+                              await controladorUsuario.removeOrador(data['idPedFirebase']);
                             }else{
-                              _collorButton = Colors.grey;
+                              await controladorUsuario.adicionaOrador(data['idPedFirebase']);
                             }
-                          });
-                        },
-                        splashColor: Colors.transparent,
-                      )
+                          },
+                          splashColor: Colors.transparent,
+                        ),
+                      ),
                     ],
                   ),
                 )
@@ -318,29 +322,5 @@ class _CardHomePageState extends State<CardHomePage> {
         )
     );
   }
-
-
-}
-
-
-final googleSignIn = GoogleSignIn();
-final auth = FirebaseAuth.instance;
-
-Future<Null> _verificarAutenticar() async {
-  GoogleSignInAccount user = googleSignIn.currentUser;
-  if(user == null){
-    user = await googleSignIn.signInSilently();
-  }
-  if(user == null){
-    user = await googleSignIn.signIn();
-  }
-  if(await auth.currentUser() == null){
-    GoogleSignInAuthentication credentials = await googleSignIn.currentUser.authentication;
-    await auth.signInWithGoogle(
-        idToken: credentials.idToken,
-        accessToken: credentials.accessToken
-    );
-  }
-
 }
 
