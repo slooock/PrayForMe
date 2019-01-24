@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:pray4me/Controladores/ControladorTelas.dart';
 import 'package:pray4me/Controladores/ControladorUsuario.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'dart:async';
 
 class HomePage extends StatefulWidget {
   @override
@@ -229,8 +228,30 @@ class _CardHomePageState extends State<CardHomePage> {
 
   Color _collorButton = Colors.grey;
 
+
   var controladorUsuario = ControladorUsuarioSingleton();
   var controladorTela = ControladorTelasSingleton();
+
+  int _counter = 0;
+  StreamController<Color> _streamController = StreamController<Color>();
+
+
+  @override
+  void dispose() {
+    _streamController.close();
+    super.dispose();
+  }
+
+  Color cor = Colors.black26;
+  void _increment(){
+
+    if(cor == Colors.black26){
+      cor = Colors.blue;
+    }else{
+      cor = Colors.black26;
+    }
+    _streamController.sink.add(cor);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -293,7 +314,7 @@ class _CardHomePageState extends State<CardHomePage> {
                     children: <Widget>[
                       Container(
                         child: IconButton(
-                          icon: Icon(FontAwesomeIcons.prayingHands,
+                          icon: Icon(FontAwesomeIcons.bowlingBall,
                             color: _collorButton,
                             size: 20,
                           ),
@@ -314,6 +335,20 @@ class _CardHomePageState extends State<CardHomePage> {
                           splashColor: Colors.transparent,
                         ),
                       ),
+                      StreamBuilder<Color>(
+                        stream: _streamController.stream,
+                        builder: (context,snapshot){
+                          return IconButton(
+                            icon: Icon(
+                              Icons.add,
+                              color: snapshot.data,
+                            ),
+                            onPressed: (){
+                              _increment();
+                            },
+                          );
+                        },
+                      )
                     ],
                   ),
                 )

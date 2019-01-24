@@ -194,7 +194,7 @@ class ControladorUsuarioSingleton {
     }
     
   }
-  
+
   Future<bool> verificaExistenciaPedido(String idPedido)async{
     QuerySnapshot pedidos = await Firestore.instance.collection("usuarios").document(usuario.idFirebase).collection("pedidosOram").where("idFirebase",isEqualTo: idPedido).getDocuments();
     if(pedidos.documents.length != 0){
