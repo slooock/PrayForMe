@@ -49,7 +49,7 @@ class _InicialPageState extends State<InicialPage> {
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30.0)),
                         onPressed: () {
-                            _controladorPag.showCadastroPage(context);
+                          _controladorPag.showCadastroPage(context);
                         },
                         color: Colors.blue,
                       ),
@@ -73,15 +73,15 @@ class _InicialPageState extends State<InicialPage> {
                       child: Text(
                         "Entrar",
                         style: TextStyle(
-                          fontSize: 17,
-                          color: Colors.blue
+                            fontSize: 17,
+                            color: Colors.blue
                         ),
                       ),
                     )
                   ],
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),

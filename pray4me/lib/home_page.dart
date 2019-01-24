@@ -14,6 +14,33 @@ var _controller = ScrollController();
 
 class _HomePageState extends State<HomePage> {
 
+
+  final StreamController<Color> _streamController = StreamController<Color>();
+  Color _colorController = Colors.black26;
+
+  void changeCor(){
+
+    if(_colorController == Colors.black26){
+      _colorController = Colors.blue;
+    }else{
+      _colorController = Colors.black26;
+    }
+    _streamController.sink.add(_colorController);
+  }
+
+  void setColor(Color color){
+
+    _colorController = color;
+
+    _streamController.sink.add(_colorController);
+  }
+
+  @override
+  void dispose() {
+    _streamController.close();
+    super.dispose();
+  }
+
   var controladorUsuario = ControladorUsuarioSingleton();
   var controladorTela = ControladorTelasSingleton();
 
@@ -200,41 +227,49 @@ class _HomePageState extends State<HomePage> {
                           itemCount: snapshot.data.documents.length,
                           itemBuilder: (context, index) {
                             List r = snapshot.data.documents.reversed.toList();
-                            return CardHomePage(r[index].data);
+                            return CardBloc(r[index].data);
                           },
                         );
                     }
                   }
-                  ),
-            )
+              ),
+            ),
           ],
         ));
   }
-
-
 }
 
 
-class CardHomePage extends StatefulWidget {
+class CardBloc extends StatefulWidget {
   final Map<String, dynamic> data;
-  CardHomePage(this.data);
-  _CardHomePageState createState() => _CardHomePageState(data);
+  CardBloc(this.data);
+  @override
+  _CardBlocState createState() => _CardBlocState(data);
 }
 
-class _CardHomePageState extends State<CardHomePage> {
+class _CardBlocState extends State<CardBloc> {
 
   final Map<String, dynamic> data;
-  _CardHomePageState(this.data);
+  _CardBlocState(this.data);
+  final StreamController<Color> _streamController = StreamController<Color>();
+  Color _colorController = Colors.black26;
 
-  Color _collorButton = Colors.grey;
+  void changeCor(){
 
+    if(_colorController == Colors.black26){
+      _colorController = Colors.blue;
+    }else{
+      _colorController = Colors.black26;
+    }
+    _streamController.sink.add(_colorController);
+  }
 
-  var controladorUsuario = ControladorUsuarioSingleton();
-  var controladorTela = ControladorTelasSingleton();
+  void setColor(Color color){
 
-  int _counter = 0;
-  StreamController<Color> _streamController = StreamController<Color>();
+    _colorController = color;
 
+    _streamController.sink.add(_colorController);
+  }
 
   @override
   void dispose() {
@@ -242,120 +277,123 @@ class _CardHomePageState extends State<CardHomePage> {
     super.dispose();
   }
 
-  Color cor = Colors.black26;
-  void _increment(){
+  var controladorUsuario = ControladorUsuarioSingleton();
 
-    if(cor == Colors.black26){
-      cor = Colors.blue;
-    }else{
-      cor = Colors.black26;
-    }
-    _streamController.sink.add(cor);
-  }
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-        child: Container(
-            padding: EdgeInsets.only(top: 15.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: <Widget>[
-                Container(
-                    padding: EdgeInsets.symmetric(horizontal: 10.0),
-                    child: Column(
-                      children: <Widget>[
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Container(
+    return StreamBuilder(
+        stream: Firestore.instance.collection("usuarios").document(controladorUsuario.usuario.idFirebase).collection("pedidosOram").snapshots(),
+        builder: (context,snap){
+          switch (snap.connectionState) {
+            case ConnectionState.none:
+            case ConnectionState.waiting:
+              return Center(
 
-                              child: CircleAvatar(
-                                backgroundImage: NetworkImage(
-                                  // 'https://pbs.twimg.com/profile_images/1032242193912582145/umj0Pzx7_400x400.jpg'),
-                                    data["senderPhoto"]
-                                ),
-                                maxRadius: 30.0,
-                              ),
-                            ),
-                            Expanded(
-                              child: Container(
-                                padding: EdgeInsets.only(left: 10.0),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
+              );
+            default:
+                //verifica se o pedido está la lista dos pedidos que o usuario ora se sim colore o botao de azul
+                List list = snap.data.documents.toList();
+
+                for(var item in list){
+                  if(item['idFirebase']==data['idPedFirebase']){
+                    setColor(Colors.blue);
+                  }
+                }
+          }
+          return Container(
+
+            child: Card(
+                child: Container(
+                    padding: EdgeInsets.only(top: 15.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: <Widget>[
+                        Container(
+                            padding: EdgeInsets.symmetric(horizontal: 10.0),
+                            child: Column(
+                              children: <Widget>[
+                                Row(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: <Widget>[
-                                    Text(
-                                      data["senderName"],
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 20.0),
-                                    ),
                                     Container(
-                                      padding: EdgeInsets.only(top: 5.0),
-                                      child: Text(data["text"],
-                                        style: TextStyle(
-                                            fontSize: 17.0
-                                        ),
+
+                                      child: CircleAvatar(
+                                        backgroundImage: NetworkImage(
+                                            data["senderPhoto"]),
+                                        maxRadius: 30.0,
                                       ),
                                     ),
+                                    Expanded(
+                                      child: Container(
+                                        padding: EdgeInsets.only(left: 10.0),
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: <Widget>[
+                                            Text(
+                                              data["senderName"],
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 20.0),
+                                            ),
+                                            Container(
+                                              padding: EdgeInsets.only(top: 5.0),
+                                              child: Text(data["text"],
+                                                style: TextStyle(
+                                                    fontSize: 17.0
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    )
                                   ],
                                 ),
+                              ],
+                            )),
+                        Container(
+                          padding: EdgeInsets.only(right: 0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: <Widget>[
+                              Padding(
+                                padding: EdgeInsets.only(right: 0),
+                                child: StreamBuilder<Color>(
+                                  stream: _streamController.stream,
+                                  initialData: Colors.black26,
+                                  builder: (context,snapshot){
+                                    return IconButton(
+                                      icon: Icon(
+                                        FontAwesomeIcons.prayingHands,
+                                        color: snapshot.data,
+                                      ),
+                                      onPressed: ()async{
+                                        changeCor();
+                                        if(_colorController == Colors.black26){
+                                          await controladorUsuario.removeOrador(data['idPedFirebase']);
+                                        }
+                                        else{
+                                          await controladorUsuario.adicionaOrador(data['idPedFirebase']);
+                                        }
+
+                                      },
+                                    );
+                                  },
+                                ),
                               ),
-                            )
-                          ],
-                        ),
-                      ],
-                    )),
-                Container(
-                  padding: EdgeInsets.only(right: 10.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: <Widget>[
-                      Container(
-                        child: IconButton(
-                          icon: Icon(FontAwesomeIcons.bowlingBall,
-                            color: _collorButton,
-                            size: 20,
+                            ],
                           ),
-                          onPressed: ()async{
-                            setState(() {
-                              if(_collorButton == Colors.grey){
-                                _collorButton = Colors.blue;
-                              }else{
-                                _collorButton = Colors.grey;
-                              }
-                            });
-                            if(_collorButton == Colors.grey){
-                              await controladorUsuario.removeOrador(data['idPedFirebase']);
-                            }else{
-                              await controladorUsuario.adicionaOrador(data['idPedFirebase']);
-                            }
-                          },
-                          splashColor: Colors.transparent,
-                        ),
-                      ),
-                      StreamBuilder<Color>(
-                        stream: _streamController.stream,
-                        builder: (context,snapshot){
-                          return IconButton(
-                            icon: Icon(
-                              Icons.add,
-                              color: snapshot.data,
-                            ),
-                            onPressed: (){
-                              _increment();
-                            },
-                          );
-                        },
-                      )
-                    ],
-                  ),
+                        )
+                      ],
+                    )
                 )
-              ],
-            )
-        )
+            ),
+          );
+        }
     );
   }
 }
+
 

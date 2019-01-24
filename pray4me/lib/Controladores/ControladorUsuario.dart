@@ -185,7 +185,7 @@ class ControladorUsuarioSingleton {
     for(var doc in docs.documents){
       await Firestore.instance.collection("pedidos").document(idPedido).collection("pessoasOram").document(doc.documentID).delete();
     }
-    
+
     //remove pedido orado do usuario
     QuerySnapshot pedidos = await Firestore.instance.collection("usuarios").document(usuario.idFirebase).collection("pedidosOram").where("idFirebase",isEqualTo: idPedido).getDocuments();
 
