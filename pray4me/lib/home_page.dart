@@ -79,7 +79,7 @@ class _HomePageState extends State<HomePage> {
                       GestureDetector(
 
                         onTap: (){
-                          controladorTela.showProfilePage(context);
+                          controladorTela.showProfilePage(context,controladorUsuario.usuario.idFirebase);
                         },
                         child: CircleAvatar(
                           backgroundImage: NetworkImage(
@@ -125,7 +125,7 @@ class _HomePageState extends State<HomePage> {
                               ),
                               Padding(
                                 padding: EdgeInsets.only(left: 4),
-                                child: Text("Agradecimentos",
+                                child: Text("Orações",
                                     style: TextStyle(
                                         fontSize: 17,
                                         color: Colors.black54
@@ -148,11 +148,12 @@ class _HomePageState extends State<HomePage> {
                   children: <Widget>[
                     FlatButton(
                       onPressed: (){
-                        controladorTela.showProfilePage(context);
+                        controladorTela.showProfilePage(context,controladorUsuario.usuario.idFirebase);
                       },
                       child: Row(
                         children: <Widget>[
-                          Icon(Icons.account_circle),
+                          Icon(Icons.account_circle,
+                          ),
                           Padding(
                             padding: EdgeInsets.only(left: 10),
                             child: Text("Perfil",
@@ -187,7 +188,7 @@ class _HomePageState extends State<HomePage> {
                           Icon(Icons.people),
                           Padding(
                             padding: EdgeInsets.only(left: 10),
-                            child: Text("Agradecimentos",
+                            child: Text("Orações",
                               style: TextStyle(
                                 fontSize: 22,
                               ),
@@ -251,8 +252,11 @@ class _CardBlocState extends State<CardBloc> {
 
   final Map<String, dynamic> data;
   _CardBlocState(this.data);
+
   final StreamController<Color> _streamController = StreamController<Color>();
   Color _colorController = Colors.black26;
+
+  var _controladorTela = ControladorTelasSingleton();
 
   void changeCor(){
 
@@ -282,116 +286,104 @@ class _CardBlocState extends State<CardBloc> {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
-        stream: Firestore.instance.collection("usuarios").document(controladorUsuario.usuario.idFirebase).collection("pedidosOram").snapshots(),
-        builder: (context,snap){
-          switch (snap.connectionState) {
-            case ConnectionState.none:
-            case ConnectionState.waiting:
-              return Center(
-
-              );
-            default:
-                //verifica se o pedido está la lista dos pedidos que o usuario ora se sim colore o botao de azul
-                List list = snap.data.documents.toList();
-
-                for(var item in list){
-                  if(item['idFirebase']==data['idPedFirebase']){
-                    setColor(Colors.blue);
+    return Column(
+      children: <Widget>[
+        Padding(
+          padding: EdgeInsets.only(left: 20,top: 10),
+          child: Column(
+            children: <Widget>[
+              StreamBuilder(
+                stream: Firestore.instance.collection("usuarios").document(controladorUsuario.usuario.idFirebase).collection("pedidosOram").snapshots(),
+                builder: (context,snap){
+                  switch (snap.connectionState) {
+                    case ConnectionState.none:
+                    case ConnectionState.waiting:
+                      return Center(
+                        child: Container(),
+                      );
+                    default:
+                      List list = snap.data.documents.toList();
+                      for(var item in list){
+                        if(item['idFirebase']==data['idPedFirebase']){
+                          setColor(Colors.blue);
+                        }
+                      }
+                      return Container();
                   }
-                }
-          }
-          return Container(
-
-            child: Card(
-                child: Container(
-                    padding: EdgeInsets.only(top: 15.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: <Widget>[
-                        Container(
-                            padding: EdgeInsets.symmetric(horizontal: 10.0),
-                            child: Column(
-                              children: <Widget>[
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    Container(
-
-                                      child: CircleAvatar(
-                                        backgroundImage: NetworkImage(
-                                            data["senderPhoto"]),
-                                        maxRadius: 30.0,
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: Container(
-                                        padding: EdgeInsets.only(left: 10.0),
-                                        child: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: <Widget>[
-                                            Text(
-                                              data["senderName"],
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 20.0),
-                                            ),
-                                            Container(
-                                              padding: EdgeInsets.only(top: 5.0),
-                                              child: Text(data["text"],
-                                                style: TextStyle(
-                                                    fontSize: 17.0
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              ],
-                            )),
-                        Container(
-                          padding: EdgeInsets.only(right: 0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: <Widget>[
-                              Padding(
-                                padding: EdgeInsets.only(right: 0),
-                                child: StreamBuilder<Color>(
-                                  stream: _streamController.stream,
-                                  initialData: Colors.black26,
-                                  builder: (context,snapshot){
-                                    return IconButton(
-                                      icon: Icon(
-                                        FontAwesomeIcons.prayingHands,
-                                        color: snapshot.data,
-                                      ),
-                                      onPressed: ()async{
-                                        changeCor();
-                                        if(_colorController == Colors.black26){
-                                          await controladorUsuario.removeOrador(data['idPedFirebase']);
-                                        }
-                                        else{
-                                          await controladorUsuario.adicionaOrador(data['idPedFirebase']);
-                                        }
-
-                                      },
-                                    );
-                                  },
-                                ),
+                },
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  GestureDetector(
+                    child: CircleAvatar(
+                      backgroundImage: NetworkImage(data["senderPhoto"]),
+                      radius: 30,
+                    ),
+                    onTap: (){
+                      _controladorTela.showProfilePage(context,data["idUsrFirebase"].toString());
+                    },
+                  ),
+                  Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.only(left: 10.0),
+                            child: Text(
+                              data["senderName"],
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold
                               ),
-                            ],
+                            ),
                           ),
-                        )
-                      ],
-                    )
-                )
-            ),
-          );
-        }
+                          Padding(
+                            padding: const EdgeInsets.only(left: 10.0,top: 10),
+                            child: Text(
+                                data["text"],
+                              style: TextStyle(
+                                fontSize: 17
+                              ),
+                            ),
+                          ),
+                        ],
+                      )
+                  )
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: <Widget>[
+                  StreamBuilder(
+                      stream: _streamController.stream,
+                      initialData: Colors.black26,
+                      builder: (context,snapshot){
+                        return IconButton(
+                          icon: Icon(Icons.add),
+                          splashColor: Colors.transparent,
+                          color: snapshot.data,
+                          onPressed: (){
+                            if(snapshot.data == Colors.black26){
+                              controladorUsuario.adicionaOrador(data['idPedFirebase']);
+                            }else{
+                              controladorUsuario.removeOrador(data["idPedFirebase"]);
+                            }
+                            changeCor();
+                          },
+                        );
+                      }
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+        Divider(
+          height: 1,
+        )
+      ],
     );
   }
 }

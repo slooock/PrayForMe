@@ -203,5 +203,17 @@ class ControladorUsuarioSingleton {
     return false;
   }
 
+  Future<Usuario> pesquisaUsuario(String idUsuario)async{
+
+    Usuario usuario = Usuario();
+    QuerySnapshot docs = await Firestore.instance.collection("usuarios").where("idFirebase",isEqualTo: idUsuario).getDocuments();
+    usuario.idFirebase = docs.documents[0]["idFirebase"];
+    usuario.senderPhotoUrl = docs.documents[0]["photoUrl"];
+    usuario.senderName = docs.documents[0]["nome"];
+    usuario.quantAgradecimentos = docs.documents[0]["quantAgradecimentos"];
+    usuario.quantPedidos = docs.documents[0]["quantPedidos"];
+
+    return usuario;
+  }
 
 }

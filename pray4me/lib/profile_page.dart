@@ -2,14 +2,20 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:pray4me/Controladores/ControladorTelas.dart';
 import 'package:pray4me/Controladores/ControladorUsuario.dart';
+import 'package:pray4me/Modelo/Usuario.dart';
 
 class ProfilePage extends StatefulWidget {
+  Usuario usuario;
+  ProfilePage(this.usuario);
+
   @override
-  _ProfilePageState createState() => _ProfilePageState();
+  _ProfilePageState createState() => _ProfilePageState(usuario);
 }
 
 class _ProfilePageState extends State<ProfilePage> {
 
+  Usuario usuario;
+  _ProfilePageState(this.usuario);
   var _controller = ScrollController();
 
   var controladorUsuario = ControladorUsuarioSingleton();
@@ -46,7 +52,7 @@ class _ProfilePageState extends State<ProfilePage> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
                 CircleAvatar(
-                  backgroundImage: NetworkImage(controladorUsuario.usuario.senderPhotoUrl),
+                  backgroundImage: NetworkImage(usuario.senderPhotoUrl),
                   radius: 50,
                 ),
                 Expanded(
@@ -60,7 +66,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             children: <Widget>[
                               Column(
                                 children: <Widget>[
-                                  Text(controladorUsuario.usuario.quantPedidos.toString(),
+                                  Text(usuario.quantPedidos.toString(),
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 22
@@ -79,7 +85,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               ),
                               Column(
                                 children: <Widget>[
-                                  Text(controladorUsuario.usuario.quantAgradecimentos.toString(),
+                                  Text(usuario.quantAgradecimentos.toString(),
                                       style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 22
@@ -121,10 +127,12 @@ class _ProfilePageState extends State<ProfilePage> {
                           ),
                         ),
                         Container(
+                          height: 30,
                           width: double.infinity,
                           child: OutlineButton(
-                            color: Colors.white,
-                            onPressed: ()async{},
+                            onPressed: (){
+                              controladorTela.showEditPage(context);
+                            },
                             child: Text("Editar perfil"),
 //                            highlightColor: Colors.lightBlue,
 //                            disabledBorderColor: Colors.lightBlue,
@@ -154,7 +162,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Text(controladorUsuario.usuario.senderName,
+                      Text(usuario.senderName,
                         style: TextStyle(
                             fontWeight: FontWeight.bold
                         ),
@@ -168,7 +176,7 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
           Expanded(
             child: StreamBuilder(
-              stream: Firestore.instance.collection("pedidos").where("idUsrFirebase",isEqualTo: controladorUsuario.usuario.idFirebase).snapshots(),
+              stream: Firestore.instance.collection("pedidos").where("idUsrFirebase",isEqualTo: usuario.idFirebase).snapshots(),
                 builder: (context, snapshot) {
                   switch (snapshot.connectionState) {
                     case ConnectionState.none:
