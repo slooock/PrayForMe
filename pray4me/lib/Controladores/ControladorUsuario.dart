@@ -50,7 +50,7 @@ class ControladorUsuarioSingleton {
     return usr;
   }
 
-  Future<Null> loginGoogle()async{
+  Future<bool> loginGoogle()async{
     await autenticarGoogle();
 
     //recolhendo informações do usuario logado
@@ -79,11 +79,13 @@ class ControladorUsuarioSingleton {
           .document(doc.documentID)
           .updateData({"idFirebase": doc.documentID});
       usuario.idFirebase = doc.documentID;
+      return true;
     }else{
       usuario.idFirebase = usr.documents[0].data["idFirebase"];
       usuario.quantAgradecimentos = usr.documents[0].data["quantAgradecimentos"];
       usuario.quantPedidos = usr.documents[0].data["quantPedidos"];
       usuario.senderPhotoUrl = usr.documents[0].data["photoUrl"];
+      return false;
     }
   }
 
@@ -246,9 +248,19 @@ class ControladorUsuarioSingleton {
   }
 
   Future<Null> atualizaNomeBiografia({String nome, String biografia})async{
-    
-    await Firestore.instance.collection("usuarios").document(usuario.idFirebase).updateData({"nome":nome});
-    usuario.senderName = nome;
+
+    if(nome!=null) {
+      print("aaaaaa");
+      await Firestore.instance.collection("usuarios").document(
+          usuario.idFirebase).updateData({"nome": nome});
+      usuario.senderName = nome;
+    }
+
+    if(biografia!=null) {
+      await Firestore.instance.collection("usuarios").document(
+          usuario.idFirebase).updateData({"biografia": biografia});
+          usuario.biografia = biografia;
+    }
   }
 }
 

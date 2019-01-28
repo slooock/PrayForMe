@@ -30,6 +30,11 @@ class _EditPageState extends State<EditPage> {
 
 
   @override
+  void dispose() {
+    _textNameControler.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
 
     final BlocController bloc = BlocProvider.of<BlocController>(context);

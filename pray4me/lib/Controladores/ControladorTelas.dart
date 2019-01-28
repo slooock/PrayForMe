@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pray4me/Inicial_login.dart';
 import 'package:pray4me/Modelo/Usuario.dart';
+import 'package:pray4me/biografia.dart';
 import 'package:pray4me/TelaCadastro.dart';
 import 'package:pray4me/home_page.dart';
 import 'package:pray4me/pedido_page.dart';
@@ -57,6 +58,11 @@ class ControladorTelasSingleton {
   void showPickImagePage(BuildContext context){
     Navigator.push(
         context, MaterialPageRoute(builder: (context) => PickImagePage()));
+  }
+
+  void showBiografiaPage(BuildContext context){
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => BiografiaPage()));
   }
 
 }

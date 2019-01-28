@@ -58,30 +58,6 @@ class _InicialPageState extends State<InicialPage> {
                 ],
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 40),
-              child: Container(
-                child: Row(
-                  children: <Widget>[
-                    Text(
-                      "Já tem uma conta? ",
-                      style: TextStyle(
-                        fontSize: 17,
-                      ),
-                    ),
-                    InkWell(
-                      child: Text(
-                        "Entrar",
-                        style: TextStyle(
-                            fontSize: 17,
-                            color: Colors.blue
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-              ),
-            ),
           ],
         ),
       ),

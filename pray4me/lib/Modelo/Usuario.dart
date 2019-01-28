@@ -6,9 +6,11 @@ class Usuario{
   String _idSistemaLogin;
   String _senderName;
   String _senderPhotoUrl;
+  String _biografia;
   int _quantPedidos;
   int _quantAgradecimentos;
 
+  String get biografia => _biografia;
   String get idFirebase => _idFirebase;
   String get idSistemaLogin => _idSistemaLogin;
   String get senderName => _senderName;
@@ -19,6 +21,10 @@ class Usuario{
 
   set idSistemaLogin(String idSistemaLogin){
     _idSistemaLogin = idSistemaLogin;
+  }
+
+  set biografia(String biografia){
+    _biografia = biografia;
   }
 
   set quantPedidos(int quantPedidos){

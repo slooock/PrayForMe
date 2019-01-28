@@ -61,8 +61,11 @@ class _CadastroPageState extends State<CadastroPage> {
               ButtonTheme(
                 child: IconButton(
                   onPressed: ()async{
-                    await controladorUsuario.loginGoogle();
-                    controladorTela.showHomePage(context);
+                     if(await controladorUsuario.loginGoogle()){
+                        controladorTela.showBiografiaPage(context);
+                     }else {
+                       controladorTela.showHomePage(context);
+                     }
                   },
                   icon: Icon(MdiIcons.google,
                   ),
