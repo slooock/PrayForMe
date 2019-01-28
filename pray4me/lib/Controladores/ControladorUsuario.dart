@@ -1,11 +1,16 @@
 
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:pray4me/Modelo/Usuario.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:image_cropper/image_cropper.dart';
 
 
 class ControladorUsuarioSingleton {
@@ -78,6 +83,7 @@ class ControladorUsuarioSingleton {
       usuario.idFirebase = usr.documents[0].data["idFirebase"];
       usuario.quantAgradecimentos = usr.documents[0].data["quantAgradecimentos"];
       usuario.quantPedidos = usr.documents[0].data["quantPedidos"];
+      usuario.senderPhotoUrl = usr.documents[0].data["photoUrl"];
     }
   }
 
@@ -96,7 +102,7 @@ class ControladorUsuarioSingleton {
     print(token);
     final graphResponse = await http.get(
         'https://graph.facebook.com/v2.12/me?fields=name,first_name,last_name,email,picture.height(200)&access_token=${token}');
-    
+
     final profile = json.decode(graphResponse.body);
 
 
@@ -135,6 +141,7 @@ class ControladorUsuarioSingleton {
           usuario.idFirebase = usr.documents[0].data["idFirebase"];
           usuario.quantAgradecimentos = usr.documents[0].data["quantAgradecimentos"];
           usuario.quantPedidos = usr.documents[0].data["quantPedidos"];
+          usuario.senderPhotoUrl = usr.documents[0].data["photoUrl"];
         }
         break;
       case FacebookLoginStatus.cancelledByUser:
@@ -153,7 +160,7 @@ class ControladorUsuarioSingleton {
   //============================================
 
   void enviaPedido(String pedido)async{
-    
+
     DocumentReference doc = await Firestore.instance.collection("pedidos").add({
       "text":pedido,
       "senderName": usuario.senderName,
@@ -192,7 +199,7 @@ class ControladorUsuarioSingleton {
     for(var ped in pedidos.documents){
       await Firestore.instance.collection("usuarios").document(usuario.idFirebase).collection("pedidosOram").document(ped.documentID).delete();
     }
-    
+
   }
 
   Future<bool> verificaExistenciaPedido(String idPedido)async{
@@ -216,4 +223,33 @@ class ControladorUsuarioSingleton {
     return usuario;
   }
 
+  Future<File> _pickImage(File imageFile) async {
+    return imageFile = await ImagePicker.pickImage(source: ImageSource.gallery);
+  }
+
+  Future<File> _cropImage(File imageFile) async {
+    File croppedFile = await ImageCropper.cropImage(
+        sourcePath: imageFile.path,
+        toolbarTitle: 'Cropper',
+        toolbarColor: Colors.blue
+    );
+    return croppedFile;
+  }
+
+  Future<File> selecionaImagem()async{
+    File imageFile;
+    imageFile = await _pickImage(imageFile);
+    if(imageFile != null)
+      return imageFile = await _cropImage(imageFile);
+    else
+      return null;
+  }
+
+  Future<Null> atualizaNomeBiografia({String nome, String biografia})async{
+    
+    await Firestore.instance.collection("usuarios").document(usuario.idFirebase).updateData({"nome":nome});
+    usuario.senderName = nome;
+  }
 }
+
+

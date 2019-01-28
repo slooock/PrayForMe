@@ -1,7 +1,9 @@
+import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:pray4me/Controladores/ControladorTelas.dart';
 import 'package:pray4me/Controladores/ControladorUsuario.dart';
+import 'package:pray4me/Controladores/blocTeste.dart';
 import 'package:pray4me/Modelo/Usuario.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -16,21 +18,24 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Usuario usuario;
   _ProfilePageState(this.usuario);
-  var _controller = ScrollController();
 
   var controladorUsuario = ControladorUsuarioSingleton();
   var controladorTela = ControladorTelasSingleton();
 
   @override
   Widget build(BuildContext context) {
+
+    final BlocController bloc = BlocProvider.of<BlocController>(context);
+//    usuario = await controladorUsuario.pesquisaUsuario(usuario.idFirebase);
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         title: Text("Perfil",
           style: TextStyle(
-            fontSize: 25,
-            color: Colors.black
+              fontSize: 25,
+              color: Colors.black
           ),
         ),
         elevation: 1,
@@ -51,9 +56,18 @@ class _ProfilePageState extends State<ProfilePage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
-                CircleAvatar(
-                  backgroundImage: NetworkImage(usuario.senderPhotoUrl),
-                  radius: 50,
+                FutureBuilder<Usuario>(
+                    future: controladorUsuario.pesquisaUsuario(usuario.idFirebase),
+                    builder: (context,snap){
+                      if(snap.connectionState == ConnectionState.done){
+                        return CircleAvatar(
+                          radius: 50,
+                          backgroundImage: NetworkImage(snap.data.senderPhotoUrl),
+                        );
+                      }else{
+                        return CircularProgressIndicator();
+                      }
+                    }
                 ),
                 Expanded(
                   child: Padding(
@@ -162,12 +176,31 @@ class _ProfilePageState extends State<ProfilePage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Text(usuario.senderName,
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold
-                        ),
+                      FutureBuilder<Usuario>(
+                          future: controladorUsuario.pesquisaUsuario(usuario.idFirebase),
+                          builder: (context,snap){
+                            if(snap.connectionState == ConnectionState.done){
+                              return Text(
+                                  snap.data.senderName,
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold
+                                ),
+                              );
+                            }else{
+                              return Container();
+                            }
+                          }
                       ),
-                      Text("Created for a place i've never known"),
+                      FutureBuilder<Usuario>(
+                          future: controladorUsuario.pesquisaUsuario(usuario.idFirebase),
+                          builder: (context,snap){
+                            if(snap.connectionState == ConnectionState.done){
+                              return Text("Created for a place i've never known");
+                            }else{
+                              return Container();
+                            }
+                          }
+                      ),
                     ],
                   ),
                 ),
@@ -175,28 +208,27 @@ class _ProfilePageState extends State<ProfilePage> {
             ],
           ),
           Expanded(
-            child: StreamBuilder(
-              stream: Firestore.instance.collection("pedidos").where("idUsrFirebase",isEqualTo: usuario.idFirebase).snapshots(),
-                builder: (context, snapshot) {
-                  switch (snapshot.connectionState) {
-                    case ConnectionState.none:
-                    case ConnectionState.waiting:
-                      return Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    default:
-                      return ListView.builder(
-                        controller: _controller,
-                        itemCount: snapshot.data.documents.length,
-                        itemBuilder: (context, index) {
-                          List r = snapshot.data.documents.reversed.toList();
-                          return CardPedido(r[index].data);
-                        },
-                      );
+              child: StreamBuilder(
+                  stream: Firestore.instance.collection("pedidos").where("idUsrFirebase",isEqualTo: usuario.idFirebase).snapshots(),
+                  builder: (context, snapshot) {
+                    switch (snapshot.connectionState) {
+                      case ConnectionState.none:
+                      case ConnectionState.waiting:
+                        return Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      default:
+                        return ListView.builder(
+                          itemCount: snapshot.data.documents.length,
+                          itemBuilder: (context, index) {
+                            List r = snapshot.data.documents.reversed.toList();
+                            return CardPedido(r[index].data,usuario);
+                          },
+                        );
+                    }
                   }
-                }
 
-            )
+              )
           )
         ],
       ),
@@ -207,17 +239,21 @@ class _ProfilePageState extends State<ProfilePage> {
 
 class CardPedido extends StatefulWidget {
 
+  Usuario usuario;
   final Map<String, dynamic> data;
-  CardPedido(this.data);
+  CardPedido(this.data,this.usuario);
 
   @override
-  _CardPedidoState createState() => _CardPedidoState(this.data);
+  _CardPedidoState createState() => _CardPedidoState(this.data,usuario);
 }
 
 class _CardPedidoState extends State<CardPedido> {
 
+  Usuario usuario;
   final Map<String, dynamic> data;
-  _CardPedidoState(this.data);
+  _CardPedidoState(this.data,this.usuario);
+
+  var controladorUsuario = ControladorUsuarioSingleton();
 
   @override
   Widget build(BuildContext context) {
@@ -234,11 +270,18 @@ class _CardPedidoState extends State<CardPedido> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
-          CircleAvatar(
-            backgroundImage: NetworkImage(
-              data["senderPhoto"]
-            ),
-            maxRadius: 30,
+          FutureBuilder<Usuario>(
+              future: controladorUsuario.pesquisaUsuario(usuario.idFirebase),
+              builder: (context,snap){
+                if(snap.connectionState == ConnectionState.done){
+                  return CircleAvatar(
+                    radius: 30,
+                    backgroundImage: NetworkImage(snap.data.senderPhotoUrl),
+                  );
+                }else{
+                  return CircularProgressIndicator();
+                }
+              }
           ),
           Expanded(
             child: Padding(
@@ -249,10 +292,20 @@ class _CardPedidoState extends State<CardPedido> {
                 children: <Widget>[
                   Padding(
                     padding: const EdgeInsets.only(bottom: 5),
-                    child: Text(data["senderName"],
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold
-                      ),
+                    child:FutureBuilder<Usuario>(
+                        future: controladorUsuario.pesquisaUsuario(usuario.idFirebase),
+                        builder: (context,snap){
+                          if(snap.connectionState == ConnectionState.done){
+                            return Text(
+                              snap.data.senderName,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold
+                              ),
+                            );
+                          }else{
+                            return Container();
+                          }
+                        }
                     ),
                   ),
                   Text(data["text"])

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:pray4me/Controladores/ControladorTelas.dart';
 import 'package:pray4me/Controladores/ControladorUsuario.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'dart:async';
+import 'package:bloc_pattern/bloc_pattern.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -77,7 +77,6 @@ class _HomePageState extends State<HomePage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       GestureDetector(
-
                         onTap: (){
                           controladorTela.showProfilePage(context,controladorUsuario.usuario.idFirebase);
                         },
@@ -317,9 +316,22 @@ class _CardBlocState extends State<CardBloc> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   GestureDetector(
-                    child: CircleAvatar(
-                      backgroundImage: NetworkImage(data["senderPhoto"]),
-                      radius: 30,
+                    child: StreamBuilder(
+                      stream: Firestore.instance.collection("usuarios").document(data['idUsrFirebase']).snapshots(),
+                      builder: (context,snaps){
+                        switch (snaps.connectionState) {
+                          case ConnectionState.none:
+                          case ConnectionState.waiting:
+                            return Center(
+                              child: Container(),
+                            );
+                          default:
+                            return  CircleAvatar(
+                              backgroundImage: NetworkImage(snaps.data.data["photoUrl"]),
+                              radius: 30,
+                            );
+                        }
+                      },
                     ),
                     onTap: (){
                       _controladorTela.showProfilePage(context,data["idUsrFirebase"].toString());
@@ -331,20 +343,28 @@ class _CardBlocState extends State<CardBloc> {
                         children: <Widget>[
                           Padding(
                             padding: const EdgeInsets.only(left: 10.0),
-                            child: Text(
-                              data["senderName"],
-                              style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold
-                              ),
+                            child: StreamBuilder(
+                              stream: Firestore.instance.collection("usuarios").document(data['idUsrFirebase']).snapshots(),
+                              builder: (context,snaps){
+
+                                if(snaps.hasData) return  Text(
+                                  snaps.data.data["nome"],
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold
+                                  ),
+                                );
+                                else
+                                  return Container();
+                              },
                             ),
                           ),
                           Padding(
-                            padding: const EdgeInsets.only(left: 10.0,top: 10),
+                            padding: const EdgeInsets.only(left: 10.0,top: 10,right: 10),
                             child: Text(
-                                data["text"],
+                              data["text"],
                               style: TextStyle(
-                                fontSize: 17
+                                  fontSize: 17
                               ),
                             ),
                           ),

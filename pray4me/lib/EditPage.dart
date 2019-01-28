@@ -1,10 +1,15 @@
 import 'dart:io';
 
+import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:pray4me/Controladores/ControladorTelas.dart';
 import 'package:pray4me/Controladores/ControladorUsuario.dart';
 import 'package:image_cropper/image_cropper.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:pray4me/Controladores/blocGlobal.dart';
+import 'package:pray4me/Controladores/blocTeste.dart';
 
 class EditPage extends StatefulWidget {
   @override
@@ -12,11 +17,25 @@ class EditPage extends StatefulWidget {
 }
 
 class _EditPageState extends State<EditPage> {
+  AppState state;
+  File imageFile;
 
+  @override
+  void initState() {
+    super.initState();
+    state = AppState.free;
+  }
   var controladorUsuario = ControladorUsuarioSingleton();
+  final _textNameControler = TextEditingController();
+
 
   @override
   Widget build(BuildContext context) {
+
+    final BlocController bloc = BlocProvider.of<BlocController>(context);
+    bloc.changeImage(controladorUsuario.usuario.senderPhotoUrl);
+    _textNameControler.text = controladorUsuario.usuario.senderName;
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -41,7 +60,10 @@ class _EditPageState extends State<EditPage> {
             icon: Icon(Icons.check),
             color: Colors.blue,
             iconSize: 30,
-            onPressed: (){},
+            onPressed: ()async{
+              await controladorUsuario.atualizaNomeBiografia(nome:_textNameControler.text);
+              Navigator.of(context).pop();
+            },
           )
         ],
       ),
@@ -51,17 +73,41 @@ class _EditPageState extends State<EditPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              CircleAvatar(
-                backgroundImage: NetworkImage(
-                  controladorUsuario.usuario.senderPhotoUrl,
-                ),
-                radius: 50,
+              StreamBuilder(
+                stream: bloc.outImage,
+                builder: (context, snap){
+                  if(snap.hasData) return CircleAvatar(
+                    radius: 50,
+                    backgroundImage: NetworkImage(snap.data),
+                  );
+                  else
+                    return Container();
+                },
               ),
               Padding(
                 padding: const EdgeInsets.only(bottom: 15),
                 child: RaisedButton(
-                    onPressed: (){
+                    onPressed: ()async{
 
+                      imageFile = await controladorUsuario.selecionaImagem();
+
+                      if(imageFile == null) return;
+
+                      FirebaseStorage.instance.ref().
+                      child(controladorUsuario.usuario.idFirebase).delete();
+
+                      StorageUploadTask task = FirebaseStorage.instance.ref().
+                        child(controladorUsuario.usuario.idFirebase).putFile(imageFile);
+                      String downloadUrl;
+
+                      await task.onComplete.then((s) async {
+                        downloadUrl = await s.ref.getDownloadURL();
+                      });
+                      Firestore.instance.collection("usuarios").
+                        document(controladorUsuario.usuario.idFirebase).updateData({"photoUrl":downloadUrl});
+
+                      bloc.changeImage(downloadUrl);
+                      controladorUsuario.usuario.senderPhotoUrl = downloadUrl;
                     },
                     child: Text("Alterar foto",
                       style: TextStyle(
@@ -87,7 +133,9 @@ class _EditPageState extends State<EditPage> {
                     ),
                   ),
                   TextFormField(
-                    initialValue: controladorUsuario.usuario.senderName,
+                    controller: _textNameControler,
+//                  initialValue: controladorUsuario.usuario.senderName,
+
                     decoration: InputDecoration(
                       contentPadding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
                     ),
@@ -107,29 +155,40 @@ class _EditPageState extends State<EditPage> {
                   ),
                 ],
               ),
-              IconButton(
-                icon: Icon(Icons.add),
-                color: Colors.blue,
-                onPressed: (){
-
-                  var controladorTela = ControladorTelasSingleton();
-                  controladorTela.showPickImagePage(context);
-                },
-              ),
             ],
           ),
         ),
       ),
     );
   }
+  Future<Null> _pickImage() async {
+    imageFile = await ImagePicker.pickImage(source: ImageSource.gallery);
+    if (imageFile != null) {
+      setState(() {
+        state = AppState.picked;
+      });
+    }
+  }
+
+  Future<Null> _cropImage() async {
+    File croppedFile = await ImageCropper.cropImage(
+      sourcePath: imageFile.path,
+      toolbarTitle: 'Cropper',
+      toolbarColor: Colors.blue
+
+    );
+    if (croppedFile != null) {
+      imageFile = croppedFile;
+      setState(() {
+        state = AppState.cropped;
+      });
+    }
+  }
 }
 
-Future<Null> _cropImage(File imageFile) async {
-  File croppedFile = await ImageCropper.cropImage(
-    sourcePath: imageFile.path,
-    ratioX: 1.0,
-    ratioY: 1.0,
-    maxWidth: 512,
-    maxHeight: 512,
-  );
+enum AppState {
+  free,
+  picked,
+  cropped,
 }
+
