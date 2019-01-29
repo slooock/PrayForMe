@@ -4,6 +4,7 @@ import 'package:pray4me/Controladores/ControladorTelas.dart';
 import 'package:pray4me/Controladores/ControladorUsuario.dart';
 import 'dart:async';
 import 'package:bloc_pattern/bloc_pattern.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -235,7 +236,8 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
           ],
-        ));
+        )
+    );
   }
 }
 
@@ -285,125 +287,149 @@ class _CardBlocState extends State<CardBloc> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        Padding(
-          padding: EdgeInsets.only(left: 20,top: 10),
-          child: Column(
-            children: <Widget>[
-              StreamBuilder(
-                stream: Firestore.instance.collection("usuarios").document(controladorUsuario.usuario.idFirebase).collection("pedidosOram").snapshots(),
-                builder: (context,snap){
-                  switch (snap.connectionState) {
-                    case ConnectionState.none:
-                    case ConnectionState.waiting:
-                      return Center(
-                        child: Container(),
-                      );
-                    default:
-                      List list = snap.data.documents.toList();
-                      for(var item in list){
-                        if(item['idFirebase']==data['idPedFirebase']){
-                          setColor(Colors.blue);
+    return GestureDetector(
+      child: Column(
+        children: <Widget>[
+          Padding(
+            padding: EdgeInsets.only(left: 20,top: 10),
+            child: Column(
+              children: <Widget>[
+                StreamBuilder(
+                  stream: Firestore.instance.collection("usuarios").document(controladorUsuario.usuario.idFirebase).collection("pedidosOram").snapshots(),
+                  builder: (context,snap){
+                    switch (snap.connectionState) {
+                      case ConnectionState.none:
+                      case ConnectionState.waiting:
+                        return Center(
+                          child: Container(),
+                        );
+                      default:
+                        List list = snap.data.documents.toList();
+                        for(var item in list){
+                          if(item['idFirebase']==data['idPedFirebase']){
+                            setColor(Colors.blue);
+                          }
                         }
-                      }
-                      return Container();
-                  }
-                },
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  GestureDetector(
-                    child: StreamBuilder(
-                      stream: Firestore.instance.collection("usuarios").document(data['idUsrFirebase']).snapshots(),
-                      builder: (context,snaps){
-                        switch (snaps.connectionState) {
-                          case ConnectionState.none:
-                          case ConnectionState.waiting:
-                            return Center(
-                              child: Container(),
-                            );
-                          default:
-                            return  CircleAvatar(
-                              backgroundImage: NetworkImage(snaps.data.data["photoUrl"]),
-                              radius: 30,
-                            );
-                        }
+                        return Container();
+                    }
+                  },
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    GestureDetector(
+                      child: StreamBuilder(
+                        stream: Firestore.instance.collection("usuarios").document(data['idUsrFirebase']).snapshots(),
+                        builder: (context,snaps){
+                          switch (snaps.connectionState) {
+                            case ConnectionState.none:
+                            case ConnectionState.waiting:
+                              return Center(
+                                child: Container(),
+                              );
+                            default:
+                              return  CircleAvatar(
+                                backgroundImage: NetworkImage(snaps.data.data["photoUrl"]),
+                                radius: 30,
+                              );
+                          }
+                        },
+                      ),
+                      onTap: (){
+                        _controladorTela.showProfilePage(context,data["idUsrFirebase"].toString());
                       },
                     ),
-                    onTap: (){
-                      _controladorTela.showProfilePage(context,data["idUsrFirebase"].toString());
-                    },
-                  ),
-                  Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Padding(
-                            padding: const EdgeInsets.only(left: 10.0),
-                            child: StreamBuilder(
-                              stream: Firestore.instance.collection("usuarios").document(data['idUsrFirebase']).snapshots(),
-                              builder: (context,snaps){
+                    Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.only(left: 10.0),
+                              child: StreamBuilder(
+                                stream: Firestore.instance.collection("usuarios").document(data['idUsrFirebase']).snapshots(),
+                                builder: (context,snaps){
 
-                                if(snaps.hasData) return  Text(
-                                  snaps.data.data["nome"],
-                                  style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold
-                                  ),
-                                );
-                                else
-                                  return Container();
-                              },
+                                  if(snaps.hasData) return  Text(
+                                    snaps.data.data["nome"],
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold
+                                    ),
+                                  );
+                                  else
+                                    return Container();
+                                },
+                              ),
                             ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 10.0,top: 10,right: 10),
-                            child: Text(
-                              data["text"],
+                            Padding(
+                              padding: const EdgeInsets.only(left: 10.0,top: 10,right: 10),
+                              child: Text(
+                                data["text"],
+                                style: TextStyle(
+                                    fontSize: 17
+                                ),
+                              ),
+                            ),
+                          ],
+                        )
+                    )
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: <Widget>[
+                    StreamBuilder(
+                        stream: _streamController.stream,
+                        initialData: Colors.black26,
+                        builder: (context,snapshot){
+                          return IconButton(
+                            icon: Icon(FontAwesomeIcons.prayingHands),
+                            splashColor: Colors.transparent,
+                            color: snapshot.data,
+                            iconSize: 15,
+                            onPressed: (){
+                              if(snapshot.data == Colors.black26){
+                                controladorUsuario.adicionaOrador(data['idPedFirebase']);
+                              }else{
+                                controladorUsuario.removeOrador(data["idPedFirebase"]);
+                              }
+                              changeCor();
+                            },
+                          );
+                        }
+                    ),
+                    StreamBuilder(
+                      stream: Firestore.instance.collection("pedidos").document(data["idPedFirebase"]).collection("pessoasOram").snapshots(),
+                      builder: (context,AsyncSnapshot<QuerySnapshot> snapshot){
+                        if(snapshot.hasData){
+                          return Container(
+                            padding: EdgeInsets.only(right: 10),
+                            child: Text("${snapshot.data.documents.length} orando",
                               style: TextStyle(
+                                  color: Colors.black38,
                                   fontSize: 17
                               ),
                             ),
-                          ),
-                        ],
-                      )
-                  )
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: <Widget>[
-                  StreamBuilder(
-                      stream: _streamController.stream,
-                      initialData: Colors.black26,
-                      builder: (context,snapshot){
-                        return IconButton(
-                          icon: Icon(Icons.add),
-                          splashColor: Colors.transparent,
-                          color: snapshot.data,
-                          onPressed: (){
-                            if(snapshot.data == Colors.black26){
-                              controladorUsuario.adicionaOrador(data['idPedFirebase']);
-                            }else{
-                              controladorUsuario.removeOrador(data["idPedFirebase"]);
-                            }
-                            changeCor();
-                          },
-                        );
-                      }
-                  ),
-                ],
-              ),
-            ],
+                          );
+                        }else{
+                          return Container();
+                        }
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
-        ),
-        Divider(
-          height: 1,
-        )
-      ],
+          Divider(
+            height: 1,
+          )
+        ],
+      ),
+      onTap: (){
+        _controladorTela.showOrandoPage(context, data["idPedFirebase"]);
+      },
     );
   }
 }

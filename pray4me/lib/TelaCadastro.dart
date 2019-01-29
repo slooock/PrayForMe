@@ -47,8 +47,14 @@ class _CadastroPageState extends State<CadastroPage> {
                 child: IconButton(
                   onPressed: ()async{
 
-                    await controladorUsuario.loginFacebook();
-                    controladorTela.showHomePage(context);
+                    if(await controladorUsuario.loginFacebook()){
+                      controladorTela.showBiografiaPage(context);
+                    }else{
+                      print("====================================");
+                      print(controladorUsuario.usuario.senderName);
+                      controladorTela.showHomePage(context);
+                    }
+
                   },
                   icon: Icon(MdiIcons.facebookBox,
                   ),

@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pray4me/Inicial_login.dart';
 import 'package:pray4me/Modelo/Usuario.dart';
+import 'package:pray4me/Modelo/orandoPage.dart';
 import 'package:pray4me/biografia.dart';
 import 'package:pray4me/TelaCadastro.dart';
 import 'package:pray4me/home_page.dart';
@@ -63,6 +64,11 @@ class ControladorTelasSingleton {
   void showBiografiaPage(BuildContext context){
     Navigator.push(
         context, MaterialPageRoute(builder: (context) => BiografiaPage()));
+  }
+
+  void showOrandoPage(BuildContext context,String idPedido){
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => OrandoPage(idPedido)));
   }
 
 }

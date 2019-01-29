@@ -24,9 +24,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-
     final BlocController bloc = BlocProvider.of<BlocController>(context);
-//    usuario = await controladorUsuario.pesquisaUsuario(usuario.idFirebase);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -191,15 +189,18 @@ class _ProfilePageState extends State<ProfilePage> {
                             }
                           }
                       ),
-                      FutureBuilder<Usuario>(
-                          future: controladorUsuario.pesquisaUsuario(usuario.idFirebase),
-                          builder: (context,snap){
-                            if(snap.connectionState == ConnectionState.done){
-                              return Text("Created for a place i've never known");
-                            }else{
-                              return Container();
+                      Padding(
+                        padding: const EdgeInsets.only(right: 10),
+                        child: FutureBuilder<Usuario>(
+                            future: controladorUsuario.pesquisaUsuario(usuario.idFirebase),
+                            builder: (context,snap){
+                              if(snap.connectionState == ConnectionState.done){
+                                return Text(snap.data.biografia);
+                              }else{
+                                return Container();
+                              }
                             }
-                          }
+                        ),
                       ),
                     ],
                   ),

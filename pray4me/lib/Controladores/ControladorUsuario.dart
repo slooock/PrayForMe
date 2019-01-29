@@ -81,6 +81,8 @@ class ControladorUsuarioSingleton {
       usuario.idFirebase = doc.documentID;
       return true;
     }else{
+      usuario.senderName = usr.documents[0].data["nome"];
+      usuario.biografia = usr.documents[0].data["biografia"];
       usuario.idFirebase = usr.documents[0].data["idFirebase"];
       usuario.quantAgradecimentos = usr.documents[0].data["quantAgradecimentos"];
       usuario.quantPedidos = usr.documents[0].data["quantPedidos"];
@@ -97,11 +99,10 @@ class ControladorUsuarioSingleton {
     facebookLogin.logOut();
   }
 
-  void loginFacebook()async{
+  Future<bool> loginFacebook()async{
 
     final result = await facebookLogin.logInWithReadPermissions(['email']);
     final token = result.accessToken.token;
-    print(token);
     final graphResponse = await http.get(
         'https://graph.facebook.com/v2.12/me?fields=name,first_name,last_name,email,picture.height(200)&access_token=${token}');
 
@@ -110,7 +111,6 @@ class ControladorUsuarioSingleton {
 
     switch (result.status) {
       case FacebookLoginStatus.loggedIn:
-        print("FacebookLoginStatus.loggedIn");
 
         FirebaseAuth.instance.signInWithFacebook(accessToken: result.accessToken.token);
 
@@ -139,18 +139,20 @@ class ControladorUsuarioSingleton {
               .document(doc.documentID)
               .updateData({"idFirebase": doc.documentID});
           usuario.idFirebase = doc.documentID;
+          return true;
         }else{
+          usuario.senderName = usr.documents[0].data["nome"];
+          usuario.biografia = usr.documents[0].data["biografia"];
           usuario.idFirebase = usr.documents[0].data["idFirebase"];
           usuario.quantAgradecimentos = usr.documents[0].data["quantAgradecimentos"];
           usuario.quantPedidos = usr.documents[0].data["quantPedidos"];
           usuario.senderPhotoUrl = usr.documents[0].data["photoUrl"];
+          return false;
         }
         break;
       case FacebookLoginStatus.cancelledByUser:
-        print("FacebookLoginStatus.cancelledByUser");
         break;
       case FacebookLoginStatus.error:
-        print(FacebookLoginStatus.error);
         break;
     }
   }
@@ -165,8 +167,6 @@ class ControladorUsuarioSingleton {
 
     DocumentReference doc = await Firestore.instance.collection("pedidos").add({
       "text":pedido,
-      "senderName": usuario.senderName,
-      "senderPhoto": usuario.senderPhotoUrl,
       "idUsrFirebase" : usuario.idFirebase,
     });
 
@@ -221,6 +221,7 @@ class ControladorUsuarioSingleton {
     usuario.senderName = docs.documents[0]["nome"];
     usuario.quantAgradecimentos = docs.documents[0]["quantAgradecimentos"];
     usuario.quantPedidos = docs.documents[0]["quantPedidos"];
+    usuario.biografia = docs.documents[0]["biografia"];
 
     return usuario;
   }
@@ -250,7 +251,6 @@ class ControladorUsuarioSingleton {
   Future<Null> atualizaNomeBiografia({String nome, String biografia})async{
 
     if(nome!=null) {
-      print("aaaaaa");
       await Firestore.instance.collection("usuarios").document(
           usuario.idFirebase).updateData({"nome": nome});
       usuario.senderName = nome;

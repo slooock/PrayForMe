@@ -27,11 +27,14 @@ class _EditPageState extends State<EditPage> {
   }
   var controladorUsuario = ControladorUsuarioSingleton();
   final _textNameControler = TextEditingController();
+  final _textBioController = TextEditingController();
 
 
   @override
   void dispose() {
+    super.dispose();
     _textNameControler.dispose();
+    _textBioController.dispose();
   }
 
   @override
@@ -40,6 +43,7 @@ class _EditPageState extends State<EditPage> {
     final BlocController bloc = BlocProvider.of<BlocController>(context);
     bloc.changeImage(controladorUsuario.usuario.senderPhotoUrl);
     _textNameControler.text = controladorUsuario.usuario.senderName;
+    _textBioController.text = controladorUsuario.usuario.biografia;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -66,7 +70,7 @@ class _EditPageState extends State<EditPage> {
             color: Colors.blue,
             iconSize: 30,
             onPressed: ()async{
-              await controladorUsuario.atualizaNomeBiografia(nome:_textNameControler.text);
+              await controladorUsuario.atualizaNomeBiografia(nome:_textNameControler.text,biografia: _textBioController.text);
               Navigator.of(context).pop();
             },
           )
@@ -154,6 +158,7 @@ class _EditPageState extends State<EditPage> {
                     ),
                   ),
                   TextFormField(
+                    controller: _textBioController,
                     decoration: InputDecoration(
                       contentPadding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
                     ),
