@@ -7,6 +7,7 @@ import 'package:pray4me/Inicial_login.dart';
 import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:pray4me/Modelo/orandoPage.dart';
 import 'package:pray4me/biografia.dart';
+import 'package:pray4me/perfilPage.dart';
 
 void main() => runApp(MyApp());
 
@@ -22,7 +23,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home: InicialPage(),
+        home: PerfilPage(),
       ),
     );
   }
