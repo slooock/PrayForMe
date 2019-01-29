@@ -79,7 +79,7 @@ class _HomePageState extends State<HomePage> {
                     children: <Widget>[
                       GestureDetector(
                         onTap: (){
-                          controladorTela.showProfilePage(context,controladorUsuario.usuario.idFirebase);
+                          controladorTela.showPerfilPage(context,controladorUsuario.usuario.idFirebase);
                         },
                         child: CircleAvatar(
                           backgroundImage: NetworkImage(
@@ -148,7 +148,7 @@ class _HomePageState extends State<HomePage> {
                   children: <Widget>[
                     FlatButton(
                       onPressed: (){
-                        controladorTela.showProfilePage(context,controladorUsuario.usuario.idFirebase);
+                        controladorTela.showPerfilPage(context,controladorUsuario.usuario.idFirebase);
                       },
                       child: Row(
                         children: <Widget>[
@@ -337,7 +337,7 @@ class _CardBlocState extends State<CardBloc> {
                         },
                       ),
                       onTap: (){
-                        _controladorTela.showProfilePage(context,data["idUsrFirebase"].toString());
+                        _controladorTela.showPerfilPage(context,data["idUsrFirebase"].toString());
                       },
                     ),
                     Expanded(

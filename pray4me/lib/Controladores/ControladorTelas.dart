@@ -7,6 +7,7 @@ import 'package:pray4me/biografia.dart';
 import 'package:pray4me/TelaCadastro.dart';
 import 'package:pray4me/home_page.dart';
 import 'package:pray4me/pedido_page.dart';
+import 'package:pray4me/perfilPage.dart';
 import 'package:pray4me/pickImage.dart';
 import 'package:pray4me/profile_page.dart';
 import 'package:pray4me/EditPage.dart';
@@ -44,6 +45,16 @@ class ControladorTelasSingleton {
 
     Navigator.push(
         context, MaterialPageRoute(builder: (context) => ProfilePage(usuario)));
+  }
+
+  void showPerfilPage(BuildContext context,String idUsuario)async{
+
+    var controladorUsuario = ControladorUsuarioSingleton();
+
+    Usuario usuario = await controladorUsuario.pesquisaUsuario(idUsuario);
+
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => PerfilPage(usuario)));
   }
 
   void showPedidoPage(BuildContext context){

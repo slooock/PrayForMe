@@ -2,35 +2,100 @@ import 'package:flutter/material.dart';
 import 'package:pray4me/Controladores/ControladorTelas.dart';
 import 'package:pray4me/Controladores/ControladorUsuario.dart';
 import 'package:pray4me/Modelo/Usuario.dart';
-
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class PerfilPage extends StatefulWidget {
+  Usuario usuario;
+  PerfilPage(this.usuario);
   @override
-  _PerfilPageState createState() => _PerfilPageState();
+  _PerfilPageState createState() => _PerfilPageState(usuario);
 }
 
 class _PerfilPageState extends State<PerfilPage> {
+  Usuario usuario;
+  _PerfilPageState(this.usuario);
+  bool _controllerPerfil = true;
+
+
+  @override
+  void dispose() {
+
+    _controllerPerfil = true;
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: Text("Perfil Page",
-          style: TextStyle(
-              color: Colors.black
-          ),
-        ),
         backgroundColor: Colors.white,
-        elevation: 1,
-      ),
-      body: Column(
+        appBar: AppBar(
+          leading: IconButton(
+              icon: Icon(Icons.arrow_back_ios,
+                color: Colors.black,
+              ),
+              onPressed: (){
+                Navigator.pop(context);
+              }
+          ),
+          title: Text("Perfil",
+            style: TextStyle(
+                color: Colors.black
+            ),
+          ),
+          backgroundColor: Colors.white,
+          elevation: 1,
+        ),
+        body: StreamBuilder(
+            stream: Firestore.instance.collection("pedidos").where("idUsrFirebase",isEqualTo: usuario.idFirebase).snapshots(),
+            builder: (context, snapshot) {
+              switch (snapshot.connectionState) {
+                case ConnectionState.none:
+                case ConnectionState.waiting:
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                default:
+                  return ListView.builder(
+                    itemCount: snapshot.data.documents.length,
+                    itemBuilder: (context, index) {
+                      List r = snapshot.data.documents.reversed.toList();
+                      if(_controllerPerfil){
+                        _controllerPerfil = false;
+                        return CardPerfil(usuario);
+                      }
+                      return CardPedido(r[index-1].data,usuario);
+                    },
+                  );
+              }
+            }
+
+        )
+    );
+  }
+}
+
+
+
+class CardPerfil extends StatefulWidget {
+  Usuario usuario;
+  CardPerfil(this.usuario);
+
+  @override
+  _CardPerfilState createState() => _CardPerfilState(usuario);
+}
+
+class _CardPerfilState extends State<CardPerfil> {
+
+  Usuario usuario;
+  _CardPerfilState(this.usuario);
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Column(
         children: <Widget>[
           Stack(
             children: <Widget>[
               SizedBox(
-//                width: MediaQuery.of(context).size.width,
-//                height: MediaQuery.of(context).size.height/2,
                 child: Container(
                   color: Colors.red,
                 ),
@@ -56,17 +121,17 @@ class _PerfilPageState extends State<PerfilPage> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
-                                Text("Kayque Avelar",
+                                Text(usuario.senderName,
                                   style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 25
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 25
                                   ),
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.only(top: 10),
-                                  child: Text("Created for a plave i've necer knownCreated for a plave i've necer knownCreated for a plave i've necer knownCreated for a plave i've necer knownCreated for a plave i've necer knownCreated for a plave i've necer knownCreated for a plave i've necer knownCreated for a plave i've necer knownCreated for a plave i've necer knownCreated for a plave i've necer knownCreated for a plave i've necer knownCreated for a plave i've necer knownCreated for a plave i've necer known",
+                                  child: Text(usuario.biografia,
                                     style: TextStyle(
-                                      fontSize: 17
+                                        fontSize: 17
                                     ),
                                   ),
                                 ),
@@ -74,7 +139,7 @@ class _PerfilPageState extends State<PerfilPage> {
                                   padding: const EdgeInsets.only(top: 10),
                                   child: Row(
                                     children: <Widget>[
-                                      Text("222",
+                                      Text(usuario.quantPedidos.toString(),
                                         style: TextStyle(
                                             fontSize: 17,
                                             fontWeight: FontWeight.bold
@@ -90,7 +155,7 @@ class _PerfilPageState extends State<PerfilPage> {
                                       ),
                                       Padding(
                                         padding: const EdgeInsets.only(left: 20),
-                                        child: Text("321",
+                                        child: Text(usuario.quantAgradecimentos.toString(),
                                           style: TextStyle(
                                               fontSize: 17,
                                               fontWeight: FontWeight.bold
@@ -126,13 +191,13 @@ class _PerfilPageState extends State<PerfilPage> {
                   height: 100.0,
                   child: Container(
                       child: new CircleAvatar(
-                          backgroundImage: NetworkImage("https://pbs.twimg.com/profile_images/1032242193912582145/umj0Pzx7_400x400.jpg"),
+                          backgroundImage: NetworkImage(usuario.senderPhotoUrl),
                           foregroundColor: Colors.white,
                           backgroundColor: Colors.blue
                       ),
                       width: 32.0,
                       height: 32.0,
-                      padding: const EdgeInsets.all(4.0), // borde width
+                      padding: const EdgeInsets.all(5.0), // borde width
                       decoration: new BoxDecoration(
                         color: const Color(0xFFFFFFFF), // border color
                         shape: BoxShape.circle,
@@ -143,11 +208,10 @@ class _PerfilPageState extends State<PerfilPage> {
           ),
         ],
       ),
-
-
     );
   }
 }
+
 
 class CardPedido extends StatefulWidget {
 
