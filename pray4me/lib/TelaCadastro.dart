@@ -50,8 +50,6 @@ class _CadastroPageState extends State<CadastroPage> {
                     if(await controladorUsuario.loginFacebook()){
                       controladorTela.showBiografiaPage(context);
                     }else{
-                      print("====================================");
-                      print(controladorUsuario.usuario.senderName);
                       controladorTela.showHomePage(context);
                     }
 

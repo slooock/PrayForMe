@@ -179,7 +179,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           builder: (context,snap){
                             if(snap.connectionState == ConnectionState.done){
                               return Text(
-                                  snap.data.senderName,
+                                snap.data.senderName,
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold
                                 ),

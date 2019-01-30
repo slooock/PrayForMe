@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pray4me/Inicial_login.dart';
 import 'package:pray4me/Modelo/Usuario.dart';
-import 'package:pray4me/Modelo/orandoPage.dart';
+import 'package:pray4me/orandoPage.dart';
 import 'package:pray4me/biografia.dart';
 import 'package:pray4me/TelaCadastro.dart';
 import 'package:pray4me/home_page.dart';

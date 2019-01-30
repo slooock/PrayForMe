@@ -262,6 +262,14 @@ class ControladorUsuarioSingleton {
           usuario.biografia = biografia;
     }
   }
+
+  Future<bool> verificaPerfilVisitado(String idUsuario)async{
+    if(idUsuario == usuario.idFirebase){
+      return await true;
+    }else{
+      return await false;
+    }
+  }
 }
 
 

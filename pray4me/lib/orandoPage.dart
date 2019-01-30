@@ -59,7 +59,7 @@ class _OrandoPageState extends State<OrandoPage> {
                           return GestureDetector(
                             child: CardPessoa(r[index].data),
                             onTap: (){
-                              controladorTelas.showProfilePage(context, r[index].data["idFirebase"]);
+                              controladorTelas.showPerfilPage(context, r[index].data["idFirebase"]);
                             },
                           );
                         },

@@ -18,14 +18,20 @@ class _PerfilPageState extends State<PerfilPage> {
 
 
   @override
-  void dispose() {
+  void initState() {
+    _controllerPerfil = true;
+    super.initState();
+  }
 
+  @override
+  void dispose() {
     _controllerPerfil = true;
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    _controllerPerfil = true;
     return Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
@@ -61,9 +67,14 @@ class _PerfilPageState extends State<PerfilPage> {
                       List r = snapshot.data.documents.reversed.toList();
                       if(_controllerPerfil){
                         _controllerPerfil = false;
-                        return CardPerfil(usuario);
+                        return Column(
+                          children: <Widget>[
+                            CardPerfil(usuario),
+                            CardPedido(r[index].data,usuario)
+                          ],
+                        );
                       }
-                      return CardPedido(r[index-1].data,usuario);
+                      return CardPedido(r[index].data,usuario);
                     },
                   );
               }
@@ -87,6 +98,8 @@ class CardPerfil extends StatefulWidget {
 class _CardPerfilState extends State<CardPerfil> {
 
   Usuario usuario;
+  var controladorTela = ControladorTelasSingleton();
+  var controladorUsuario = ControladorUsuarioSingleton();
   _CardPerfilState(this.usuario);
   @override
   Widget build(BuildContext context) {
@@ -117,11 +130,53 @@ class _CardPerfilState extends State<CardPerfil> {
                         ),
                         Container(
                           child: Padding(
-                            padding: const EdgeInsets.only(top: 58,left: 18),
+                            padding: const EdgeInsets.only(top: 10,left: 18),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
-                                Text(usuario.senderName,
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: <Widget>[
+                                    FutureBuilder(
+                                        future: controladorUsuario.verificaPerfilVisitado(usuario.idFirebase),
+                                        builder: (context,snapshot){
+                                          if(snapshot.hasData) {
+                                            if (snapshot.data)
+                                              return Padding(
+                                                padding: const EdgeInsets.only(
+                                                    right: 10),
+                                                child: OutlineButton(
+                                                    child: new Text(
+                                                      "Editar perfil",
+                                                      style: TextStyle(),
+                                                    ),
+                                                    onPressed: () {
+                                                      controladorTela
+                                                          .showEditPage(
+                                                          context);
+                                                    },
+                                                    borderSide: BorderSide(
+                                                        color: Colors.black38
+                                                    ),
+                                                    shape: new RoundedRectangleBorder(
+                                                        borderRadius: new BorderRadius
+                                                            .circular(30.0))
+                                                ),
+                                              );
+                                            else
+                                              return Container(
+                                                padding: EdgeInsets.only(
+                                                    top: 45),
+                                              );
+                                          }else{
+                                            return Container();
+                                          }
+                                        }
+                                    ),
+                                  ],
+                                ),
+                                Text( usuario.idFirebase == controladorUsuario.usuario.idFirebase ? controladorUsuario.usuario.senderName :
+                                  usuario.senderName,
                                   style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 25
@@ -129,7 +184,8 @@ class _CardPerfilState extends State<CardPerfil> {
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.only(top: 10),
-                                  child: Text(usuario.biografia,
+                                  child: Text( usuario.idFirebase == controladorUsuario.usuario.idFirebase ? controladorUsuario.usuario.biografia :
+                                    usuario.biografia,
                                     style: TextStyle(
                                         fontSize: 17
                                     ),
@@ -230,6 +286,7 @@ class _CardPedidoState extends State<CardPedido> {
   _CardPedidoState(this.data,this.usuario);
 
   var controladorUsuario = ControladorUsuarioSingleton();
+  var controladorTela = ControladorTelasSingleton();
 
   @override
   Widget build(BuildContext context) {
@@ -284,7 +341,35 @@ class _CardPedidoState extends State<CardPedido> {
                         }
                     ),
                   ),
-                  Text(data["text"])
+                  Text(data["text"]),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: <Widget>[
+                      GestureDetector(
+                        onTap: (){
+                          controladorTela.showOrandoPage(context, data["idPedFirebase"]);
+                        },
+                        child: StreamBuilder(
+                          stream: Firestore.instance.collection("pedidos").document(data["idPedFirebase"]).collection("pessoasOram").snapshots(),
+                          builder: (context,AsyncSnapshot<QuerySnapshot> snapshot){
+                            if(snapshot.hasData){
+                              return Container(
+                                padding: EdgeInsets.only(right: 10),
+                                child: Text("${snapshot.data.documents.length} orando",
+                                  style: TextStyle(
+                                      color: Colors.black38,
+                                      fontSize: 17
+                                  ),
+                                ),
+                              );
+                            }else{
+                              return Container();
+                            }
+                          },
+                        ),
+                      ),
+                    ],
+                  )
                 ],
               ),
             ),
