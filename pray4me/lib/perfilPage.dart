@@ -11,30 +11,52 @@ class PerfilPage extends StatefulWidget {
   _PerfilPageState createState() => _PerfilPageState(usuario);
 }
 
-class _PerfilPageState extends State<PerfilPage> {
+class _PerfilPageState extends State<PerfilPage> with SingleTickerProviderStateMixin{
   Usuario usuario;
   _PerfilPageState(this.usuario);
-  bool _controllerPerfil = true;
+  TabController _tabController;
+
+  final List<Tab> myTabs = <Tab>[
+    Tab(text: 'Pedidos'),
+    Tab(text: 'Orações'),
+  ];
 
 
   @override
   void initState() {
-    _controllerPerfil = true;
     super.initState();
+     _tabController = TabController(length: 3, vsync: this);
   }
 
   @override
   void dispose() {
-    _controllerPerfil = true;
+    _controller.dispose();
+    _controlList.dispose();
     super.dispose();
   }
 
+  var _controller = ScrollController();
+  var _controlList = ScrollController();
+
+
   @override
   Widget build(BuildContext context) {
-    _controllerPerfil = true;
+//    _tabController = TabController(length: 3, vsync: this);
     return Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(
+                Icons.add,
+                color: Colors.black,
+              ),
+              onPressed: (){
+                _controller.jumpTo(1000);
+                print(_controller);
+              },
+            )
+          ],
           leading: IconButton(
               icon: Icon(Icons.arrow_back_ios,
                 color: Colors.black,
@@ -51,35 +73,43 @@ class _PerfilPageState extends State<PerfilPage> {
           backgroundColor: Colors.white,
           elevation: 1,
         ),
-        body: StreamBuilder(
-            stream: Firestore.instance.collection("pedidos").where("idUsrFirebase",isEqualTo: usuario.idFirebase).snapshots(),
-            builder: (context, snapshot) {
-              switch (snapshot.connectionState) {
-                case ConnectionState.none:
-                case ConnectionState.waiting:
-                  return Center(
-                    child: CircularProgressIndicator(),
-                  );
-                default:
-                  return ListView.builder(
-                    itemCount: snapshot.data.documents.length,
-                    itemBuilder: (context, index) {
-                      List r = snapshot.data.documents.reversed.toList();
-                      if(_controllerPerfil){
-                        _controllerPerfil = false;
-                        return Column(
-                          children: <Widget>[
-                            CardPerfil(usuario),
-                            CardPedido(r[index].data,usuario)
-                          ],
-                        );
+        body: SingleChildScrollView(
+          controller: _controller,
+          child: Column(
+            children: <Widget>[
+              CardPerfil(usuario),
+                TabBar(
+                  controller: _tabController,
+                  tabs: myTabs,
+                  labelColor: Colors.blue,
+                ),
+              Container(
+                  child: StreamBuilder(
+                      stream: Firestore.instance.collection("pedidos").where("idUsrFirebase",isEqualTo: usuario.idFirebase).snapshots(),
+                      builder: (context, snapshot) {
+                        switch (snapshot.connectionState) {
+                          case ConnectionState.none:
+                          case ConnectionState.waiting:
+                            return Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          default:
+                            return ListView.builder(
+                              controller: _controlList,
+                              shrinkWrap: true,
+                              itemCount: snapshot.data.documents.length,
+                              itemBuilder: (context, index) {
+                                List r = snapshot.data.documents.reversed.toList();
+                                return CardPedido(r[index].data,usuario);
+                              },
+                            );
+                        }
                       }
-                      return CardPedido(r[index].data,usuario);
-                    },
-                  );
-              }
-            }
 
+                  ),
+              )
+            ],
+          ),
         )
     );
   }
@@ -247,7 +277,9 @@ class _CardPerfilState extends State<CardPerfil> {
                   height: 100.0,
                   child: Container(
                       child: new CircleAvatar(
-                          backgroundImage: NetworkImage(usuario.senderPhotoUrl),
+                          backgroundImage: NetworkImage( usuario.idFirebase == controladorUsuario.usuario.idFirebase ?
+                            controladorUsuario.usuario.senderPhotoUrl : usuario.senderPhotoUrl
+                          ),
                           foregroundColor: Colors.white,
                           backgroundColor: Colors.blue
                       ),
