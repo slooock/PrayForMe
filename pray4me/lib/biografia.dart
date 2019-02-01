@@ -4,11 +4,17 @@ import 'package:pray4me/Controladores/ControladorTelas.dart';
 import 'package:pray4me/Controladores/ControladorUsuario.dart';
 
 
-class BiografiaPage extends StatelessWidget {
+class BiografiaPage extends StatefulWidget {
+  @override
+  _BiografiaPageState createState() => _BiografiaPageState();
+}
+
+class _BiografiaPageState extends State<BiografiaPage> {
 
   var controladorUsuario = ControladorUsuarioSingleton();
   var controladorTela = ControladorTelasSingleton();
   final _textControler = TextEditingController();
+  bool _isComposing = false;
 
   @override
   Widget build(BuildContext context) {
@@ -34,6 +40,11 @@ class BiografiaPage extends StatelessWidget {
                 ),
               ),
               TextField(
+                onChanged: (text){
+                  setState(() {
+                    _isComposing = text.length > 0;
+                  });
+                },
                 controller: _textControler,
                 maxLength: 300,
                 maxLines: null,
@@ -48,10 +59,10 @@ class BiografiaPage extends StatelessWidget {
                     color: Colors.blue,
                     disabledColor: Color.fromRGBO(135, 206, 235, 100.0),
                     disabledTextColor: Colors.white,
-                    onPressed: ()async{
+                    onPressed: _isComposing ? ()async{
                       await controladorUsuario.atualizaNomeBiografia(biografia: _textControler.text);
                       controladorTela.showHomePage(context);
-                    },
+                    } : null,
                     textColor: Colors.white,
                     shape: new RoundedRectangleBorder(
                         borderRadius: new BorderRadius.circular(30.0)),

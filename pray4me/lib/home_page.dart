@@ -48,175 +48,248 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          elevation: 1,
-          automaticallyImplyLeading: false,
-          title: Text('Página inicial',
-            style: TextStyle(
-                color: Colors.black,
-                fontSize: 25
+    return WillPopScope(
+      onWillPop: _requestPop,
+      child: Scaffold(
+          appBar: AppBar(
+            elevation: 1,
+            automaticallyImplyLeading: false,
+            title: Text('Página inicial',
+              style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 25
+              ),
             ),
+            backgroundColor: Colors.white,
           ),
-          backgroundColor: Colors.white,
-        ),
-        drawer: Drawer(
-          child: ListView(
-            children: <Widget>[
-              Container(
-                width: MediaQuery.of(context).size.width,
-                height: 155,
-                decoration: BoxDecoration(
-                    border: BorderDirectional(
-                        bottom: BorderSide(
-                            color: Colors.black12
-                        )
-                    )
+          drawer: Drawer(
+            child: ListView(
+              children: <Widget>[
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: 155,
+                  decoration: BoxDecoration(
+                      border: BorderDirectional(
+                          bottom: BorderSide(
+                              color: Colors.black12
+                          )
+                      )
+                  ),
+                  child: Padding(
+                    padding: EdgeInsets.only(top: 10,left: 20,right: 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        GestureDetector(
+                          onTap: (){
+                            controladorTela.showPerfilPage(context,controladorUsuario.usuario.idFirebase);
+                          },
+                          child: CircleAvatar(
+                            backgroundImage: NetworkImage(
+                                controladorUsuario.usuario.senderPhotoUrl
+                            ),
+                            radius: 30,
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(top: 10.0),
+                          child: Text(controladorUsuario.usuario.senderName,
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20
+                            ),
+                          ),
+                        ),
+                        Padding(
+                            padding: EdgeInsets.only(top: 20),
+                            child:Row(
+                              children: <Widget>[
+                                Text(controladorUsuario.usuario.quantPedidos.toString(),
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 17,
+//                                color: Colors.grey
+                                    )
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(left: 4,right: 15),
+                                  child: Text("Pedidos",
+                                      style: TextStyle(
+                                          fontSize: 17,
+                                          color: Colors.black54
+                                      )
+                                  ),
+                                ),
+                                StreamBuilder(
+                                    stream: Firestore.instance.collection("usuarios").document(controladorUsuario.usuario.idFirebase).collection("pedidosOram").snapshots(),
+                                    builder: (context, AsyncSnapshot<QuerySnapshot> snapshot){
+                                      if(snapshot.hasData){
+                                        return Text(snapshot.data.documents.length.toString(),
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 17,
+                                            )
+                                        );
+                                      }else {
+                                        return Container();
+                                      }
+                                    }
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(left: 4),
+                                  child: Text("Orações",
+                                      style: TextStyle(
+                                          fontSize: 17,
+                                          color: Colors.black54
+                                      )
+                                  ),
+                                )
+                              ],
+                            )
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-                child: Padding(
-                  padding: EdgeInsets.only(top: 10,left: 20,right: 20),
+                Container(
+                  padding: EdgeInsets.only(top: 10),
+                  height: MediaQuery.of(context).size.height,
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
-                      GestureDetector(
-                        onTap: (){
+                      FlatButton(
+                        onPressed: (){
                           controladorTela.showPerfilPage(context,controladorUsuario.usuario.idFirebase);
                         },
-                        child: CircleAvatar(
-                          backgroundImage: NetworkImage(
-                              controladorUsuario.usuario.senderPhotoUrl
-                          ),
-                          radius: 30,
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(top: 10.0),
-                        child: Text(controladorUsuario.usuario.senderName,
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20
-                          ),
-                        ),
-                      ),
-                      Padding(
-                          padding: EdgeInsets.only(top: 20),
-                          child:Row(
-                            children: <Widget>[
-                              Text(controladorUsuario.usuario.quantPedidos.toString(),
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 17,
-//                                color: Colors.grey
-                                  )
-                              ),
-                              Padding(
-                                padding: EdgeInsets.only(left: 4,right: 15),
-                                child: Text("Pedidos",
-                                    style: TextStyle(
-                                        fontSize: 17,
-                                        color: Colors.black54
-                                    )
+                        child: Row(
+                          children: <Widget>[
+                            Icon(Icons.account_circle,
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(left: 10),
+                              child: Text("Perfil",
+                                style: TextStyle(
+                                  fontSize: 22,
                                 ),
                               ),
-                              StreamBuilder(
-                                  stream: Firestore.instance.collection("usuarios").document(controladorUsuario.usuario.idFirebase).collection("pedidosOram").snapshots(),
-                                  builder: (context, AsyncSnapshot<QuerySnapshot> snapshot){
-                                    if(snapshot.hasData){
-                                      return Text(snapshot.data.documents.length.toString(),
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 17,
-                                          )
-                                      );
-                                    }else {
-                                      return Container();
-                                    }
-                                  }
-                              ),
-                              Padding(
-                                padding: EdgeInsets.only(left: 4),
-                                child: Text("Orações",
-                                    style: TextStyle(
-                                        fontSize: 17,
-                                        color: Colors.black54
-                                    )
+                            )
+                          ],
+                        ),
+                      ),
+                      FlatButton(
+                        onPressed: (){
+                          controladorTela.showPerfilPage(context,controladorUsuario.usuario.idFirebase);
+                        },
+                        child: Row(
+                          children: <Widget>[
+                            Icon(Icons.home,
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(left: 10),
+                              child: Text("Home",
+                                style: TextStyle(
+                                  fontSize: 22,
                                 ),
-                              )
-                            ],
-                          )
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                      FlatButton(
+                        onPressed: (){
+                          Navigator.pop(context);
+                          Navigator.pop(context);
+                        },
+                        child: Row(
+                          children: <Widget>[
+                            Icon(Icons.arrow_back,
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(left: 10),
+                              child: Text("Sair",
+                                style: TextStyle(
+                                  fontSize: 22,
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
                       ),
                     ],
                   ),
-                ),
-              ),
-              Container(
-                padding: EdgeInsets.only(top: 10),
-                height: MediaQuery.of(context).size.height/3.5,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    FlatButton(
-                      onPressed: (){
-                        controladorTela.showPerfilPage(context,controladorUsuario.usuario.idFirebase);
-                      },
-                      child: Row(
-                        children: <Widget>[
-                          Icon(Icons.account_circle,
-                          ),
-                          Padding(
-                            padding: EdgeInsets.only(left: 10),
-                            child: Text("Perfil",
-                              style: TextStyle(
-                                fontSize: 22,
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              )
-            ],
-          ),
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () async{
-            controladorTela.showPedidoPage(context);
-
-          },
-          child: Icon(Icons.add),
-          backgroundColor: Colors.blue,
-        ),
-        body: Column(
-          children: <Widget>[
-            Expanded(
-              child: StreamBuilder(
-                  stream: Firestore.instance.collection("pedidos").snapshots(),
-                  builder: (context, snapshot) {
-                    switch (snapshot.connectionState) {
-                      case ConnectionState.none:
-                      case ConnectionState.waiting:
-                        return Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      default:
-                        return ListView.builder(
-                          controller: _controller,
-                          itemCount: snapshot.data.documents.length,
-                          itemBuilder: (context, index) {
-                            List r = snapshot.data.documents.reversed.toList();
-                            return CardBloc(r[index].data);
-                          },
-                        );
-                    }
-                  }
-              ),
+                )
+              ],
             ),
-          ],
-        )
+          ),
+          floatingActionButton: FloatingActionButton(
+            onPressed: () async{
+              controladorTela.showPedidoPage(context);
+
+            },
+            child: Icon(Icons.add),
+            backgroundColor: Colors.blue,
+          ),
+          body: Column(
+            children: <Widget>[
+              Expanded(
+                child: StreamBuilder(
+                    stream: Firestore.instance.collection("pedidos").snapshots(),
+                    builder: (context, snapshot) {
+                      switch (snapshot.connectionState) {
+                        case ConnectionState.none:
+                        case ConnectionState.waiting:
+                          return Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        default:
+                          return ListView.builder(
+                            controller: _controller,
+                            itemCount: snapshot.data.documents.length,
+                            itemBuilder: (context, index) {
+                              List r = snapshot.data.documents.reversed.toList();
+                              return CardBloc(r[index].data);
+                            },
+                          );
+                      }
+                    }
+                ),
+              ),
+            ],
+          )
+      ),
     );
+  }
+
+  Future<bool> _requestPop(){
+    showDialog(context: context,
+        builder: (context){
+          return AlertDialog(
+//            title: Text("Deseja sair?"),
+          shape: OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(15))
+          ),
+            content: Text("Deseja sair?"),
+            actions: <Widget>[
+              FlatButton(
+                child: Text("Cancelar"),
+                onPressed: (){
+                  Navigator.pop(context);
+                },
+              ),
+              FlatButton(
+                child: Text("Sim"),
+                onPressed: (){
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          );
+        }
+    );
+    return Future.value(false);
+
   }
 }
 
@@ -323,23 +396,43 @@ class _CardBlocState extends State<CardBloc> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            Padding(
-                              padding: const EdgeInsets.only(left: 10.0),
-                              child: StreamBuilder(
-                                stream: Firestore.instance.collection("usuarios").document(data['idUsrFirebase']).snapshots(),
-                                builder: (context,snaps){
+                            Row(
+                              children: <Widget>[
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 10.0),
+                                  child: StreamBuilder(
+                                    stream: Firestore.instance.collection("usuarios").document(data['idUsrFirebase']).snapshots(),
+                                    builder: (context,snaps){
 
-                                  if(snaps.hasData) return  Text(
-                                    snaps.data.data["nome"],
-                                    style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold
-                                    ),
-                                  );
-                                  else
-                                    return Container();
-                                },
-                              ),
+                                      if(snaps.hasData) return  Text(
+                                        snaps.data.data["nome"],
+                                        style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold
+                                        ),
+                                      );
+                                      else
+                                        return Container();
+                                    },
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 20),
+                                  child: Container(
+//                                      color: Colors.blue,
+                                      height: 40,
+                                      width: 40,
+                                  padding: EdgeInsets.only(right: 3),
+                                  child: IconButton(
+
+                                      icon: Icon(Icons.delete_outline),
+                                      onPressed: (){}
+                                  )
+                                  ),
+                                ),
+                              ],
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             ),
                             Padding(
                               padding: const EdgeInsets.only(left: 10.0,top: 10,right: 10),
@@ -411,6 +504,7 @@ class _CardBlocState extends State<CardBloc> {
       },
     );
   }
+
 }
 
 

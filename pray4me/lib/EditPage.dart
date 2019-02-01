@@ -73,6 +73,15 @@ class _EditPageState extends State<EditPage> {
               await controladorUsuario.atualizaNomeBiografia(nome:_textNameControler.text,biografia: _textBioController.text);
               Navigator.of(context).pop();
             },
+          ),
+          IconButton(
+            icon: Icon(Icons.check),
+            color: Colors.pink,
+            iconSize: 30,
+            onPressed: ()async{
+
+
+            },
           )
         ],
       ),
@@ -103,15 +112,20 @@ class _EditPageState extends State<EditPage> {
                       if(imageFile == null) return;
 
                       FirebaseStorage.instance.ref().
-                      child(controladorUsuario.usuario.idFirebase).delete();
+
+                      child(controladorUsuario.usuario.idFirebase).delete().
+                          then((_) => print('Successfully deleted storage item' )).catchError(null);
+
 
                       StorageUploadTask task = FirebaseStorage.instance.ref().
                         child(controladorUsuario.usuario.idFirebase).putFile(imageFile);
+
                       String downloadUrl;
 
                       await task.onComplete.then((s) async {
                         downloadUrl = await s.ref.getDownloadURL();
                       });
+
                       Firestore.instance.collection("usuarios").
                         document(controladorUsuario.usuario.idFirebase).updateData({"photoUrl":downloadUrl});
 
