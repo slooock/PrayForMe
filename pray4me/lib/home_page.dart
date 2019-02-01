@@ -117,11 +117,20 @@ class _HomePageState extends State<HomePage> {
                                     )
                                 ),
                               ),
-                              Text(controladorUsuario.usuario.quantAgradecimentos.toString(),
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 17,
-                                  )
+                              StreamBuilder(
+                                  stream: Firestore.instance.collection("usuarios").document(controladorUsuario.usuario.idFirebase).collection("pedidosOram").snapshots(),
+                                  builder: (context, AsyncSnapshot<QuerySnapshot> snapshot){
+                                    if(snapshot.hasData){
+                                      return Text(snapshot.data.documents.length.toString(),
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 17,
+                                          )
+                                      );
+                                    }else {
+                                      return Container();
+                                    }
+                                  }
                               ),
                               Padding(
                                 padding: EdgeInsets.only(left: 4),

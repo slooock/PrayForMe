@@ -119,8 +119,6 @@ class _PerfilPageState extends State<PerfilPage> with SingleTickerProviderStateM
                             builder: (context,AsyncSnapshot<List<DocumentSnapshot>> snapshott){
 
                               if(snapshott.hasData) {
-//                                print(snapshott.data.length);
-
                                 return ListView.builder(
                                   controller: _controlList,
                                   shrinkWrap: true,
@@ -273,12 +271,22 @@ class _CardPerfilState extends State<CardPerfil> {
                                       ),
                                       Padding(
                                         padding: const EdgeInsets.only(left: 20),
-                                        child: Text(usuario.quantAgradecimentos.toString(),
-                                          style: TextStyle(
-                                              fontSize: 17,
-                                              fontWeight: FontWeight.bold
+                                          child: StreamBuilder(
+                                              stream: Firestore.instance.collection("usuarios").document(usuario.idFirebase).collection("pedidosOram").snapshots(),
+                                              builder: (context, AsyncSnapshot<QuerySnapshot> snapshot){
+                                                if(snapshot.hasData){
+                                                  return Text(snapshot.data.documents.length.toString(),
+                                                    style: TextStyle(
+                                                        fontSize: 17,
+                                                        fontWeight: FontWeight.bold
+                                                    ),
+                                                  );
+                                                }else {
+                                                  return Container();
+                                                }
+                                              }
                                           ),
-                                        ),
+
                                       ),
                                       Padding(
                                         padding: const EdgeInsets.only(left: 5),
@@ -368,7 +376,7 @@ class _CardPedidoState extends State<CardPedido> {
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
           FutureBuilder<Usuario>(
-              future: controladorUsuario.pesquisaUsuario(usuario.idFirebase),
+              future: controladorUsuario.pesquisaUsuario(data["idUsrFirebase"]),
               builder: (context,snap){
                 if(snap.connectionState == ConnectionState.done){
                   return CircleAvatar(
@@ -390,7 +398,7 @@ class _CardPedidoState extends State<CardPedido> {
                   Padding(
                     padding: const EdgeInsets.only(bottom: 5),
                     child:FutureBuilder<Usuario>(
-                        future: controladorUsuario.pesquisaUsuario(usuario.idFirebase),
+                        future: controladorUsuario.pesquisaUsuario(data["idUsrFirebase"]),
                         builder: (context,snap){
                           if(snap.connectionState == ConnectionState.done){
                             return Text(

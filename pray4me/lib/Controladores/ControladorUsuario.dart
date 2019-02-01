@@ -100,6 +100,9 @@ class ControladorUsuarioSingleton {
   }
 
   Future<bool> loginFacebook()async{
+    sairFacebook();
+    auth.signOut();
+
 
     final result = await facebookLogin.logInWithReadPermissions(['email']);
     final token = result.accessToken.token;
