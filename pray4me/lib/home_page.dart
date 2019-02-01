@@ -5,6 +5,7 @@ import 'package:pray4me/Controladores/ControladorUsuario.dart';
 import 'dart:async';
 import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:pray4me/pedido_page.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -174,38 +175,6 @@ class _HomePageState extends State<HomePage> {
                         ],
                       ),
                     ),
-                    FlatButton(
-                      onPressed: (){},
-                      child: Row(
-                        children: <Widget>[
-                          Icon(Icons.chrome_reader_mode),
-                          Padding(
-                            padding: EdgeInsets.only(left: 10),
-                            child: Text("Pedidos",
-                              style: TextStyle(
-                                fontSize: 22,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    FlatButton(
-                      onPressed: (){},
-                      child: Row(
-                        children: <Widget>[
-                          Icon(Icons.people),
-                          Padding(
-                            padding: EdgeInsets.only(left: 10),
-                            child: Text("Orações",
-                              style: TextStyle(
-                                fontSize: 22,
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
-                    )
                   ],
                 ),
               )
@@ -215,6 +184,7 @@ class _HomePageState extends State<HomePage> {
         floatingActionButton: FloatingActionButton(
           onPressed: () async{
             controladorTela.showPedidoPage(context);
+
           },
           child: Icon(Icons.add),
           backgroundColor: Colors.blue,

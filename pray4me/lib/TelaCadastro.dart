@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:pray4me/Controladores/ControladorTelas.dart';
 import 'package:pray4me/Controladores/ControladorUsuario.dart';
+import 'package:pray4me/home_page.dart';
 
 class CadastroPage extends StatefulWidget {
   _CadastroPageState createState() => _CadastroPageState();
@@ -50,7 +51,12 @@ class _CadastroPageState extends State<CadastroPage> {
                     if(await controladorUsuario.loginFacebook()){
                       controladorTela.showBiografiaPage(context);
                     }else{
-                      controladorTela.showHomePage(context);
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(builder: (BuildContext context) => HomePage()),
+                        ModalRoute.withName("/"),
+                      );
+//                      controladorTela.showHomePage(context);
                     }
 
                   },
@@ -68,7 +74,12 @@ class _CadastroPageState extends State<CadastroPage> {
                      if(await controladorUsuario.loginGoogle()){
                         controladorTela.showBiografiaPage(context);
                      }else {
-                       controladorTela.showHomePage(context);
+                       Navigator.pushAndRemoveUntil(
+                         context,
+                         MaterialPageRoute(builder: (BuildContext context) => HomePage()),
+                         ModalRoute.withName("/"),
+                       );
+//                       controladorTela.showHomePage(context);
                      }
                   },
                   icon: Icon(MdiIcons.google,
@@ -81,7 +92,13 @@ class _CadastroPageState extends State<CadastroPage> {
               ),
               ButtonTheme(
                 child: IconButton(
-                  onPressed: (){},
+                  onPressed: (){
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(builder: (BuildContext context) => HomePage()),
+                      ModalRoute.withName("/"),
+                    );
+                  },
                   icon: Icon(MdiIcons.email,
                   ),
                   iconSize: 40,

@@ -46,18 +46,6 @@ class _PerfilPageState extends State<PerfilPage> with SingleTickerProviderStateM
     return Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(
-                Icons.add,
-                color: Colors.black,
-              ),
-              onPressed: (){
-                _controller.jumpTo(1000);
-                print(_controller);
-              },
-            )
-          ],
           leading: IconButton(
               icon: Icon(Icons.arrow_back_ios,
                 color: Colors.black,
@@ -68,7 +56,8 @@ class _PerfilPageState extends State<PerfilPage> with SingleTickerProviderStateM
           ),
           title: Text("Perfil",
             style: TextStyle(
-                color: Colors.black
+                color: Colors.black,
+                fontSize: 25
             ),
           ),
           backgroundColor: Colors.white,
@@ -305,7 +294,6 @@ class _CardPerfilState extends State<CardPerfil> {
                         ),
                       ],
                     ),
-                    Divider()
                   ],
                 ),
               ),
