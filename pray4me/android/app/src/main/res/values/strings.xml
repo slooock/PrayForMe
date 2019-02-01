@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Your App Name here.</string>
-    <string name="facebook_app_id">356958561793795</string>
-    <string name="fb_login_protocol_scheme">fb356958561793795</string>
+    <string name="app_name">PrayForMe</string>
+    <string name="facebook_app_id">2268528663469513</string>
+    <string name="fb_login_protocol_scheme">fb2268528663469513</string>
 </resources>
