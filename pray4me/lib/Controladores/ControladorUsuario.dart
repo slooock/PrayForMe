@@ -259,7 +259,7 @@ class ControladorUsuarioSingleton {
     if(biografia!=null) {
       await Firestore.instance.collection("usuarios").document(
           usuario.idFirebase).updateData({"biografia": biografia});
-          usuario.biografia = biografia;
+      usuario.biografia = biografia;
     }
   }
 
@@ -269,6 +269,22 @@ class ControladorUsuarioSingleton {
     }else{
       return await false;
     }
+  }
+
+  Future<List<DocumentSnapshot>> pesquisaPedidosOram(String idFirebase)async{
+    QuerySnapshot docs = await Firestore.instance.collection("usuarios").document(idFirebase).collection("pedidosOram").getDocuments();
+//    print(docs.documents.length);
+
+//    print(docs.documents[0]["idFirebase"]);
+    List<DocumentSnapshot> list = List();
+
+
+    for(var item in docs.documents){
+      DocumentSnapshot doc = await Firestore.instance.collection("pedidos").document(item["idFirebase"]).get();
+      list.add(doc);
+    }
+    return list;
+
   }
 }
 

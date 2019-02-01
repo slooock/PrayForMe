@@ -15,6 +15,7 @@ class _PerfilPageState extends State<PerfilPage> with SingleTickerProviderStateM
   Usuario usuario;
   _PerfilPageState(this.usuario);
   TabController _tabController;
+  var controladorUsuario = ControladorUsuarioSingleton();
 
   final List<Tab> myTabs = <Tab>[
     Tab(text: 'Pedidos'),
@@ -25,7 +26,7 @@ class _PerfilPageState extends State<PerfilPage> with SingleTickerProviderStateM
   @override
   void initState() {
     super.initState();
-     _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
   }
 
   @override
@@ -78,36 +79,67 @@ class _PerfilPageState extends State<PerfilPage> with SingleTickerProviderStateM
           child: Column(
             children: <Widget>[
               CardPerfil(usuario),
-                TabBar(
-                  controller: _tabController,
-                  tabs: myTabs,
-                  labelColor: Colors.blue,
-                ),
+              TabBar(
+                controller: _tabController,
+                tabs: myTabs,
+                labelColor: Colors.blue,
+              ),
               Container(
-                  child: StreamBuilder(
-                      stream: Firestore.instance.collection("pedidos").where("idUsrFirebase",isEqualTo: usuario.idFirebase).snapshots(),
-                      builder: (context, snapshot) {
-                        switch (snapshot.connectionState) {
-                          case ConnectionState.none:
-                          case ConnectionState.waiting:
-                            return Center(
-                              child: CircularProgressIndicator(),
-                            );
-                          default:
-                            return ListView.builder(
-                              controller: _controlList,
-                              shrinkWrap: true,
-                              itemCount: snapshot.data.documents.length,
-                              itemBuilder: (context, index) {
-                                List r = snapshot.data.documents.reversed.toList();
-                                return CardPedido(r[index].data,usuario);
-                              },
-                            );
-                        }
-                      }
+                  height: MediaQuery.of(context).size.height - 80 - 49.2,
+                  child: TabBarView(
+                      controller: _tabController,
+                      children: <Widget>[
+                        Container(
+                          child: StreamBuilder(
+                              stream: Firestore.instance.collection("pedidos").where("idUsrFirebase",isEqualTo: usuario.idFirebase).snapshots(),
+                              builder: (context, snapshot) {
+                                switch (snapshot.connectionState) {
+                                  case ConnectionState.none:
+                                  case ConnectionState.waiting:
+                                    return Center(
+                                      child: CircularProgressIndicator(),
+                                    );
+                                  default:
+                                    return ListView.builder(
+                                      controller: _controlList,
+                                      shrinkWrap: true,
+                                      itemCount: snapshot.data.documents.length,
+                                      itemBuilder: (context, index) {
+                                        List r = snapshot.data.documents.reversed.toList();
+                                        return CardPedido(r[index].data,usuario);
+                                      },
+                                    );
+                                }
+                              }
 
-                  ),
-              )
+                          ),
+                        ),
+                        FutureBuilder(
+                            future: controladorUsuario.pesquisaPedidosOram(usuario.idFirebase),
+                            builder: (context,AsyncSnapshot<List<DocumentSnapshot>> snapshott){
+
+                              if(snapshott.hasData) {
+//                                print(snapshott.data.length);
+
+                                return ListView.builder(
+                                  controller: _controlList,
+                                  shrinkWrap: true,
+                                  itemCount: snapshott.data.length,
+                                  itemBuilder: (context, index) {
+                                    List r = snapshott.data.toList();
+                                    return CardPedido(r[index].data,usuario);
+                                  },
+                                );
+                                return Container();
+                              }else{
+                                return Container();
+                              }
+
+                            }
+                        ),
+                      ]
+                  )
+              ),
             ],
           ),
         )
@@ -206,7 +238,7 @@ class _CardPerfilState extends State<CardPerfil> {
                                   ],
                                 ),
                                 Text( usuario.idFirebase == controladorUsuario.usuario.idFirebase ? controladorUsuario.usuario.senderName :
-                                  usuario.senderName,
+                                usuario.senderName,
                                   style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 25
@@ -215,7 +247,7 @@ class _CardPerfilState extends State<CardPerfil> {
                                 Padding(
                                   padding: const EdgeInsets.only(top: 10),
                                   child: Text( usuario.idFirebase == controladorUsuario.usuario.idFirebase ? controladorUsuario.usuario.biografia :
-                                    usuario.biografia,
+                                  usuario.biografia,
                                     style: TextStyle(
                                         fontSize: 17
                                     ),
@@ -278,7 +310,7 @@ class _CardPerfilState extends State<CardPerfil> {
                   child: Container(
                       child: new CircleAvatar(
                           backgroundImage: NetworkImage( usuario.idFirebase == controladorUsuario.usuario.idFirebase ?
-                            controladorUsuario.usuario.senderPhotoUrl : usuario.senderPhotoUrl
+                          controladorUsuario.usuario.senderPhotoUrl : usuario.senderPhotoUrl
                           ),
                           foregroundColor: Colors.white,
                           backgroundColor: Colors.blue
