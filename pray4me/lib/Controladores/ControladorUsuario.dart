@@ -311,6 +311,11 @@ class ControladorUsuarioSingleton {
     
     await Firestore.instance.collection("usuarios").document(doc.data["idUsrFirebase"]).updateData({"quantPedidos":(quantPedido-1)});
 
+    QuerySnapshot pessoasOram = await Firestore.instance.collection("pedidos").document(idPedido).collection("pessoasOram").getDocuments();
+
+    for(var item in pessoasOram.documents){
+      Firestore.instance.collection("pedidos").document(idPedido).collection("pessoasOram").document(item.documentID).delete();
+    }
 
     await Firestore.instance.collection("pedidos").document(idPedido).delete();
 
