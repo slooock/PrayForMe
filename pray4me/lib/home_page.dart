@@ -5,6 +5,7 @@ import 'package:pray4me/Controladores/ControladorUsuario.dart';
 import 'dart:async';
 import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:pray4me/Inicial_login.dart';
 import 'package:pray4me/pedido_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -195,27 +196,11 @@ class _HomePageState extends State<HomePage> {
                       ),
                       FlatButton(
                         onPressed: (){
-                          controladorTela.showPerfilPage(context,controladorUsuario.usuario.idFirebase);
-                        },
-                        child: Row(
-                          children: <Widget>[
-                            Icon(Icons.home,
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(left: 10),
-                              child: Text("Home",
-                                style: TextStyle(
-                                  fontSize: 22,
-                                ),
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                      FlatButton(
-                        onPressed: (){
-                          Navigator.pop(context);
-                          Navigator.pop(context);
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(builder: (BuildContext context) => InicialPage()),
+                            ModalRoute.withName('/'),
+                          );
                         },
                         child: Row(
                           children: <Widget>[
@@ -296,8 +281,11 @@ class _HomePageState extends State<HomePage> {
               FlatButton(
                 child: Text("Sim"),
                 onPressed: (){
-                  Navigator.pop(context);
-                  Navigator.pop(context);
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (BuildContext context) => InicialPage()),
+                    ModalRoute.withName('/'),
+                  );
                 },
               ),
             ],
