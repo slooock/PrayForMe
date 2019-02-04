@@ -246,7 +246,6 @@ class _CardPerfilState extends State<CardPerfil> {
                                   child: Row(
                                     children: <Widget>[
                                       StreamBuilder(
-
                                         stream: Firestore.instance.collection("usuarios").document(controladorUsuario.usuario.idFirebase).snapshots(),
                                         builder: (context,AsyncSnapshot<DocumentSnapshot> snapText){
                                           if(snapText.hasData){
@@ -254,7 +253,6 @@ class _CardPerfilState extends State<CardPerfil> {
                                                 style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: 17,
-//                                color: Colors.grey
                                                 )
                                             );
                                           }else{
@@ -262,7 +260,6 @@ class _CardPerfilState extends State<CardPerfil> {
                                                 style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: 17,
-//                                color: Colors.grey
                                                 )
                                             );
                                           }
@@ -369,6 +366,7 @@ class _CardPedidoState extends State<CardPedido> {
   @override
   Widget build(BuildContext context) {
     return Slidable(
+      enabled: controladorUsuario.usuario.idFirebase == data["idUsrFirebase"]?true:false,
       delegate: new SlidableDrawerDelegate(),
       actionExtentRatio: 0.25,
       child: Container(

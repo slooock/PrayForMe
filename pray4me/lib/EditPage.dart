@@ -76,114 +76,107 @@ class _EditPageState extends State<EditPage> {
               Navigator.of(context).pop();
             },
           ),
-          IconButton(
-            icon: Icon(Icons.check),
-            color: Colors.pink,
-            iconSize: 30,
-            onPressed: ()async{
-
-
-            },
-          )
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.only(left: 20,top:20,right: 20),
-        child: Center(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              StreamBuilder(
-                stream: bloc.outImage,
-                builder: (context, snap){
-                  if(snap.hasData) return CircleAvatar(
-                    radius: 50,
-                    backgroundImage: NetworkImage(snap.data),
-                  );
-                  else
-                    return Container();
-                },
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 15),
-                child: RaisedButton(
-                    onPressed: ()async{
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.only(left: 20,top:20,right: 20),
+          child: Center(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                StreamBuilder(
+                  stream: bloc.outImage,
+                  builder: (context, snap){
+                    if(snap.hasData) return CircleAvatar(
+                      radius: 50,
+                      backgroundImage: NetworkImage(snap.data),
+                    );
+                    else
+                      return Container();
+                  },
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 15),
+                  child: RaisedButton(
+                      onPressed: ()async{
 
-                      imageFile = await controladorUsuario.selecionaImagem();
+                        imageFile = await controladorUsuario.selecionaImagem();
 
-                      if(imageFile == null) return;
+                        if(imageFile == null) return;
 
 //                      StorageReference doc = await FirebaseStorage.instance.ref().child(controladorUsuario.usuario.idFirebase);
 
-                      FirebaseStorage.instance.ref().
+                        FirebaseStorage.instance.ref().
 
-                      child(controladorUsuario.usuario.idFirebase).delete().
-                          then((_) => print('Successfully deleted storage item' )).catchError(null);
+                        child(controladorUsuario.usuario.idFirebase).delete().
+                            then((_) => print('Successfully deleted storage item' )).catchError(null);
 
 
-                      StorageUploadTask task = FirebaseStorage.instance.ref().
-                        child(controladorUsuario.usuario.idFirebase).putFile(imageFile);
+                        StorageUploadTask task = FirebaseStorage.instance.ref().
+                          child(controladorUsuario.usuario.idFirebase).putFile(imageFile);
 
-                      String downloadUrl;
+                        String downloadUrl;
 
-                      await task.onComplete.then((s) async {
-                        downloadUrl = await s.ref.getDownloadURL();
-                      });
+                        await task.onComplete.then((s) async {
+                          downloadUrl = await s.ref.getDownloadURL();
+                        });
 
-                      Firestore.instance.collection("usuarios").
-                        document(controladorUsuario.usuario.idFirebase).updateData({"photoUrl":downloadUrl});
+                        Firestore.instance.collection("usuarios").
+                          document(controladorUsuario.usuario.idFirebase).updateData({"photoUrl":downloadUrl});
 
-                      bloc.changeImage(downloadUrl);
-                      controladorUsuario.usuario.senderPhotoUrl = downloadUrl;
-                    },
-                    child: Text("Alterar foto",
+                        bloc.changeImage(downloadUrl);
+                        controladorUsuario.usuario.senderPhotoUrl = downloadUrl;
+                      },
+                      child: Text("Alterar foto",
+                        style: TextStyle(
+                          color: Colors.blue,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold
+                        ),
+                      ),
+                      colorBrightness: Brightness.light,
+                    color: Colors.white,
+                    highlightColor: Colors.white,
+                    splashColor: Colors.white,
+                    elevation: 0,
+                    highlightElevation: 0,
+                  ),
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text("Nome",
                       style: TextStyle(
-                        color: Colors.blue,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold
+                        color: Colors.black38
                       ),
                     ),
-                    colorBrightness: Brightness.light,
-                  color: Colors.white,
-                  highlightColor: Colors.white,
-                  splashColor: Colors.white,
-                  elevation: 0,
-                  highlightElevation: 0,
-                ),
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text("Nome",
-                    style: TextStyle(
-                      color: Colors.black38
-                    ),
-                  ),
-                  TextFormField(
-                    controller: _textNameControler,
+                    TextFormField(
+                      controller: _textNameControler,
 //                  initialValue: controladorUsuario.usuario.senderName,
 
-                    decoration: InputDecoration(
-                      contentPadding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 20),
-                    child: Text("Biografia",
-                      style: TextStyle(
-                          color: Colors.black38
+                      decoration: InputDecoration(
+                        contentPadding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
                       ),
                     ),
-                  ),
-                  TextFormField(
-                    controller: _textBioController,
-                    decoration: InputDecoration(
-                      contentPadding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 20),
+                      child: Text("Biografia",
+                        style: TextStyle(
+                            color: Colors.black38
+                        ),
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ],
+                    TextFormField(
+                      controller: _textBioController,
+                      decoration: InputDecoration(
+                        contentPadding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
