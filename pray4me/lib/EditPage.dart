@@ -10,6 +10,8 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:pray4me/Controladores/blocGlobal.dart';
 import 'package:pray4me/Controladores/blocTeste.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
+
 
 class EditPage extends StatefulWidget {
   @override
@@ -110,6 +112,8 @@ class _EditPageState extends State<EditPage> {
                       imageFile = await controladorUsuario.selecionaImagem();
 
                       if(imageFile == null) return;
+
+//                      StorageReference doc = await FirebaseStorage.instance.ref().child(controladorUsuario.usuario.idFirebase);
 
                       FirebaseStorage.instance.ref().
 

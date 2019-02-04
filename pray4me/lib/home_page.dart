@@ -104,12 +104,28 @@ class _HomePageState extends State<HomePage> {
                             padding: EdgeInsets.only(top: 20),
                             child:Row(
                               children: <Widget>[
-                                Text(controladorUsuario.usuario.quantPedidos.toString(),
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 17,
+                                StreamBuilder(
+
+                                  stream: Firestore.instance.collection("usuarios").document(controladorUsuario.usuario.idFirebase).snapshots(),
+                                  builder: (context,AsyncSnapshot<DocumentSnapshot> snapText){
+                                    if(snapText.hasData){
+                                      return Text(snapText.data.data["quantPedidos"].toString(),
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 17,
 //                                color: Colors.grey
-                                    )
+                                          )
+                                      );
+                                    }else{
+                                      return Text("?",
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 17,
+//                                color: Colors.grey
+                                          )
+                                      );
+                                    }
+                                  },
                                 ),
                                 Padding(
                                   padding: EdgeInsets.only(left: 4,right: 15),
@@ -414,20 +430,6 @@ class _CardBlocState extends State<CardBloc> {
                                       else
                                         return Container();
                                     },
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(right: 20),
-                                  child: Container(
-//                                      color: Colors.blue,
-                                      height: 40,
-                                      width: 40,
-                                  padding: EdgeInsets.only(right: 3),
-                                  child: IconButton(
-
-                                      icon: Icon(Icons.delete_outline),
-                                      onPressed: (){}
-                                  )
                                   ),
                                 ),
                               ],

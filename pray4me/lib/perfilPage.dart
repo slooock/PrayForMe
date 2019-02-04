@@ -3,6 +3,7 @@ import 'package:pray4me/Controladores/ControladorTelas.dart';
 import 'package:pray4me/Controladores/ControladorUsuario.dart';
 import 'package:pray4me/Modelo/Usuario.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 
 class PerfilPage extends StatefulWidget {
   Usuario usuario;
@@ -244,11 +245,28 @@ class _CardPerfilState extends State<CardPerfil> {
                                   padding: const EdgeInsets.only(top: 10),
                                   child: Row(
                                     children: <Widget>[
-                                      Text(usuario.quantPedidos.toString(),
-                                        style: TextStyle(
-                                            fontSize: 17,
-                                            fontWeight: FontWeight.bold
-                                        ),
+                                      StreamBuilder(
+
+                                        stream: Firestore.instance.collection("usuarios").document(controladorUsuario.usuario.idFirebase).snapshots(),
+                                        builder: (context,AsyncSnapshot<DocumentSnapshot> snapText){
+                                          if(snapText.hasData){
+                                            return Text(snapText.data.data["quantPedidos"].toString(),
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 17,
+//                                color: Colors.grey
+                                                )
+                                            );
+                                          }else{
+                                            return Text("?",
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 17,
+//                                color: Colors.grey
+                                                )
+                                            );
+                                          }
+                                        },
                                       ),
                                       Padding(
                                         padding: const EdgeInsets.only(left: 5),
@@ -350,92 +368,106 @@ class _CardPedidoState extends State<CardPedido> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.only(left: 20,right: 20,top: 10,bottom: 10),
-      decoration: BoxDecoration(
-          border: BorderDirectional(
-              bottom: BorderSide(
-                  color: Colors.black12
-              )
-          )
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          FutureBuilder<Usuario>(
-              future: controladorUsuario.pesquisaUsuario(data["idUsrFirebase"]),
-              builder: (context,snap){
-                if(snap.connectionState == ConnectionState.done){
-                  return CircleAvatar(
-                    radius: 30,
-                    backgroundImage: NetworkImage(snap.data.senderPhotoUrl),
-                  );
-                }else{
-                  return CircularProgressIndicator();
+    return Slidable(
+      delegate: new SlidableDrawerDelegate(),
+      actionExtentRatio: 0.25,
+      child: Container(
+        padding: const EdgeInsets.only(left: 20,right: 20,top: 10,bottom: 10),
+        decoration: BoxDecoration(
+            border: BorderDirectional(
+                bottom: BorderSide(
+                    color: Colors.black12
+                )
+            )
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            FutureBuilder<Usuario>(
+                future: controladorUsuario.pesquisaUsuario(data["idUsrFirebase"]),
+                builder: (context,snap){
+                  if(snap.connectionState == ConnectionState.done){
+                    return CircleAvatar(
+                      radius: 30,
+                      backgroundImage: NetworkImage(snap.data.senderPhotoUrl),
+                    );
+                  }else{
+                    return CircularProgressIndicator();
+                  }
                 }
-              }
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.only(left: 10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 5),
-                    child:FutureBuilder<Usuario>(
-                        future: controladorUsuario.pesquisaUsuario(data["idUsrFirebase"]),
-                        builder: (context,snap){
-                          if(snap.connectionState == ConnectionState.done){
-                            return Text(
-                              snap.data.senderName,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold
-                              ),
-                            );
-                          }else{
-                            return Container();
-                          }
-                        }
-                    ),
-                  ),
-                  Text(data["text"]),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: <Widget>[
-                      GestureDetector(
-                        onTap: (){
-                          controladorTela.showOrandoPage(context, data["idPedFirebase"]);
-                        },
-                        child: StreamBuilder(
-                          stream: Firestore.instance.collection("pedidos").document(data["idPedFirebase"]).collection("pessoasOram").snapshots(),
-                          builder: (context,AsyncSnapshot<QuerySnapshot> snapshot){
-                            if(snapshot.hasData){
-                              return Container(
-                                padding: EdgeInsets.only(right: 10),
-                                child: Text("${snapshot.data.documents.length} orando",
-                                  style: TextStyle(
-                                      color: Colors.black38,
-                                      fontSize: 17
-                                  ),
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(left: 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 5),
+                      child:FutureBuilder<Usuario>(
+                          future: controladorUsuario.pesquisaUsuario(data["idUsrFirebase"]),
+                          builder: (context,snap){
+                            if(snap.connectionState == ConnectionState.done){
+                              return Text(
+                                snap.data.senderName,
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold
                                 ),
                               );
                             }else{
                               return Container();
                             }
-                          },
-                        ),
+                          }
                       ),
-                    ],
-                  )
-                ],
+                    ),
+                    Text(data["text"]),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: <Widget>[
+                        GestureDetector(
+                          onTap: (){
+                            controladorTela.showOrandoPage(context, data["idPedFirebase"]);
+                          },
+                          child: StreamBuilder(
+                            stream: Firestore.instance.collection("pedidos").document(data["idPedFirebase"]).collection("pessoasOram").snapshots(),
+                            builder: (context,AsyncSnapshot<QuerySnapshot> snapshot){
+                              if(snapshot.hasData){
+                                return Container(
+                                  padding: EdgeInsets.only(right: 10),
+                                  child: Text("${snapshot.data.documents.length} orando",
+                                    style: TextStyle(
+                                        color: Colors.black38,
+                                        fontSize: 17
+                                    ),
+                                  ),
+                                );
+                              }else{
+                                return Container();
+                              }
+                            },
+                          ),
+                        ),
+                      ],
+                    )
+                  ],
+                ),
               ),
-            ),
-          )
-        ],
+            )
+          ],
+        ),
       ),
+      secondaryActions:<Widget>[
+        new IconSlideAction(
+          caption: 'Delete',
+          color: Colors.red[400],
+          icon: Icons.delete,
+          onTap: ()async{
+            await controladorUsuario.removePedido(data["idPedFirebase"]);
+          },
+        ),
+      ],
     );
   }
 }

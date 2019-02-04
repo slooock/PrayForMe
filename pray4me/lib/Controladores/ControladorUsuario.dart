@@ -173,7 +173,8 @@ class ControladorUsuarioSingleton {
       "idUsrFirebase" : usuario.idFirebase,
     });
 
-    usuario.quantPedidos = usuario.quantPedidos +1;
+    DocumentSnapshot usr = await Firestore.instance.collection("usuarios").document(usuario.idFirebase).get();
+    usuario.quantPedidos = usr.data["quantPedidos"] + 1;
     await Firestore.instance.collection('usuarios').document(usuario.idFirebase).updateData({"quantPedidos":usuario.quantPedidos});
     await Firestore.instance.collection('pedidos').document(doc.documentID).updateData({"idPedFirebase":doc.documentID});
   }
@@ -287,6 +288,31 @@ class ControladorUsuarioSingleton {
       list.add(doc);
     }
     return list;
+
+  }
+
+  Future<Null> removePedido(String idPedido)async{
+    
+    QuerySnapshot docs = await Firestore.instance.collection("pedidos").document(idPedido).collection("pessoasOram").getDocuments();
+
+    for(var item in docs.documents){
+       QuerySnapshot pedidos = await Firestore.instance.collection("usuarios").document(item.data["idFirebase"]).collection("pedidosOram").where("idFirebase",isEqualTo: idPedido).getDocuments();
+       Firestore.instance.collection("usuarios").document(item.data["idFirebase"]).collection("pedidosOram").document(pedidos.documents[0].documentID).delete();
+    }
+
+    //pega o pedido
+    DocumentSnapshot doc = await Firestore.instance.collection("pedidos").document(idPedido).get();
+
+    //pega o usuario
+    DocumentSnapshot usuario = await Firestore.instance.collection("usuarios").document(doc.data["idUsrFirebase"]).get();
+
+    //pega a quantPedido feita pelo usuario
+    int quantPedido = usuario.data["quantPedidos"];
+    
+    await Firestore.instance.collection("usuarios").document(doc.data["idUsrFirebase"]).updateData({"quantPedidos":(quantPedido-1)});
+
+
+    await Firestore.instance.collection("pedidos").document(idPedido).delete();
 
   }
 }
