@@ -19,7 +19,8 @@ class MyApp extends StatelessWidget {
       bloc: BlocController(),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'Flutter Demo',
+        title: 'Pray for me',
+        color: Colors.white,
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),

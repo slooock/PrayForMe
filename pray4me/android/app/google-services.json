@@ -1,35 +1,35 @@
 {
   "project_info": {
-    "project_number": "1020262892734",
-    "firebase_url": "https://pray4me-f2943.firebaseio.com",
-    "project_id": "pray4me-f2943",
-    "storage_bucket": "pray4me-f2943.appspot.com"
+    "project_number": "147350944265",
+    "firebase_url": "https://prayforme-70210.firebaseio.com",
+    "project_id": "prayforme-70210",
+    "storage_bucket": "prayforme-70210.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1020262892734:android:4cb2bf3bf8f2d8e4",
+        "mobilesdk_app_id": "1:147350944265:android:4cb2bf3bf8f2d8e4",
         "android_client_info": {
           "package_name": "com.slooock.pray4me"
         }
       },
       "oauth_client": [
         {
-          "client_id": "1020262892734-rl2pi6ebockc5lu7p8svgdq2dvq78leo.apps.googleusercontent.com",
+          "client_id": "147350944265-u7qn5218p9dqvptmvphbsi39bapr9nqg.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.slooock.pray4me",
-            "certificate_hash": "fe38c28bc0e52d70a7100d8f000cdb5cce6a1839"
+            "certificate_hash": "3a1d48a4326bfd40d74ed987928661e7068f3ebd"
           }
         },
         {
-          "client_id": "1020262892734-s11mff6659r4her0rm85oajboshmbo9o.apps.googleusercontent.com",
+          "client_id": "147350944265-p9af7kpk3qtu28ik6vdhg4c8uagsnh19.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyA8yVLynE763_UdirnDc_niMF0dWMG8Gtk"
+          "current_key": "AIzaSyAyIQjMzK3OfYceGvq364y16YEmc8DJ7yI"
         }
       ],
       "services": {
@@ -40,7 +40,7 @@
           "status": 2,
           "other_platform_oauth_client": [
             {
-              "client_id": "1020262892734-s11mff6659r4her0rm85oajboshmbo9o.apps.googleusercontent.com",
+              "client_id": "147350944265-p9af7kpk3qtu28ik6vdhg4c8uagsnh19.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

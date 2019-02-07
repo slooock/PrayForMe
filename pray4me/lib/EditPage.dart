@@ -100,20 +100,20 @@ class _EditPageState extends State<EditPage> {
                   padding: const EdgeInsets.only(bottom: 15),
                   child: RaisedButton(
                       onPressed: ()async{
-
                         imageFile = await controladorUsuario.selecionaImagem();
 
                         if(imageFile == null) return;
 
 //                      StorageReference doc = await FirebaseStorage.instance.ref().child(controladorUsuario.usuario.idFirebase);
 
-                        FirebaseStorage.instance.ref().
+                        try {
+                          await FirebaseStorage.instance.ref().
+                          child(controladorUsuario.usuario.idFirebase).delete();
+                        }catch(e){
+                          print("Arquivo não encontrado");
+                        }
 
-                        child(controladorUsuario.usuario.idFirebase).delete().
-                            then((_) => print('Successfully deleted storage item' )).catchError(null);
-
-
-                        StorageUploadTask task = FirebaseStorage.instance.ref().
+                        StorageUploadTask task = await FirebaseStorage.instance.ref().
                           child(controladorUsuario.usuario.idFirebase).putFile(imageFile);
 
                         String downloadUrl;

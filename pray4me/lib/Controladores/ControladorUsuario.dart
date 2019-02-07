@@ -100,8 +100,8 @@ class ControladorUsuarioSingleton {
   }
 
   Future<bool> loginFacebook()async{
-    sairFacebook();
-    auth.signOut();
+    await sairFacebook();
+    await auth.signOut();
 
 
     final result = await facebookLogin.logInWithReadPermissions(['email']);
@@ -115,7 +115,7 @@ class ControladorUsuarioSingleton {
     switch (result.status) {
       case FacebookLoginStatus.loggedIn:
 
-        FirebaseAuth.instance.signInWithFacebook(accessToken: result.accessToken.token);
+        await auth.signInWithFacebook(accessToken: result.accessToken.token);
 
         usuario = new Usuario();
         usuario.senderName = profile['name'];
