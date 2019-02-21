@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pray4me/Controladores/ControladorTelas.dart';
+import 'package:pray4me/Controladores/ControladorUsuario.dart';
 
 
 class InicialPage extends StatefulWidget {
@@ -9,6 +10,20 @@ class InicialPage extends StatefulWidget {
 
 class _InicialPageState extends State<InicialPage> {
   var _controladorPag = ControladorTelasSingleton();
+  bool _controladorIcone = false;
+
+  var contoladorUsuario = ControladorUsuarioSingleton();
+
+  @override
+  void initState() {
+    _controladorIcone = false;
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {

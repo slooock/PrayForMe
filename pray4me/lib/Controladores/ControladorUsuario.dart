@@ -54,7 +54,10 @@ class ControladorUsuarioSingleton {
     await autenticarGoogle();
 
     //recolhendo informações do usuario logado
-    usuario = new Usuario();
+    if(usuario == null){
+      usuario = new Usuario();
+    }
+
     usuario.senderName = googleSignIn.currentUser.displayName;
     usuario.idSistemaLogin =googleSignIn.currentUser.id;
     usuario.quantAgradecimentos = 0;
@@ -117,7 +120,9 @@ class ControladorUsuarioSingleton {
 
         await auth.signInWithFacebook(accessToken: result.accessToken.token);
 
-        usuario = new Usuario();
+        if(usuario == null){
+          usuario = new Usuario();
+        }
         usuario.senderName = profile['name'];
         usuario.idSistemaLogin = profile["id"];
         usuario.quantAgradecimentos = 0;
@@ -320,6 +325,14 @@ class ControladorUsuarioSingleton {
     await Firestore.instance.collection("pedidos").document(idPedido).delete();
 
   }
+
+  Future<Null> loginEmail()async{
+//    FirebaseAuth.instance.createUserWithEmailAndPassword(email: "kayque.avelar@gmail.com", password: "b2-4ac");
+
+      FirebaseUser user = await  auth.signInWithEmailAndPassword(email: "kayque.avelar@gmail.com",password: "b2-4ac");
+
+  }
+
 }
 
 

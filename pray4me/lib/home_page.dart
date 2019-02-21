@@ -46,15 +46,27 @@ class _HomePageState extends State<HomePage> {
 
   var controladorUsuario = ControladorUsuarioSingleton();
   var controladorTela = ControladorTelasSingleton();
+  GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey();
+
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: _requestPop,
       child: Scaffold(
+        key: _scaffoldKey,
           appBar: AppBar(
             elevation: 1,
-            automaticallyImplyLeading: false,
+//            automaticallyImplyLeading: false,
+            leading: IconButton(icon: Icon(
+              Icons.menu,
+              color: Colors.black,
+              size: 25,
+            ),
+                onPressed: (){
+                  _scaffoldKey.currentState.openDrawer();
+              }
+            ),
             title: Text('Página inicial',
               style: TextStyle(
                   color: Colors.black,
@@ -267,9 +279,9 @@ class _HomePageState extends State<HomePage> {
         builder: (context){
           return AlertDialog(
 //            title: Text("Deseja sair?"),
-          shape: OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(15))
-          ),
+            shape: OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(15))
+            ),
             content: Text("Deseja sair?"),
             actions: <Widget>[
               FlatButton(
